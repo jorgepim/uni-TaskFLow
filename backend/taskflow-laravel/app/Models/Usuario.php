@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\HasApiTokens;
 
 class Usuario extends Model
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens;
 
     protected $table = 'usuarios';
 
@@ -78,5 +79,10 @@ class Usuario extends Model
     public function comentarios()
     {
         return $this->hasMany(Comentario::class, 'usuario_id');
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->roles->pluck('nombre')->contains($role);
     }
 }

@@ -25,79 +25,89 @@ class DatabaseSeeder extends Seeder
 
         // Usuarios
         $admin = Usuario::firstOrCreate([
-            'email' => 'jorgepimentel162@gmail.com',
+            'email' => 'admin@example.com',
         ], [
             'nombre' => 'Admin',
-            'password' => '123321',
+            'password' => 'password',
             'activo' => true,
         ]);
 
-        $user = Usuario::firstOrCreate([
-            'email' => 'willygetta4@gmail.com',
-        ], [
-            'nombre' => 'Normal User',
-            'password' => '123321',
-            'activo' => true,
-        ]);
+        // Crear 7 usuarios con rol USER
+        $users = [];
+        for ($i = 1; $i <= 7; $i++) {
+            $u = Usuario::firstOrCreate([
+                'email' => "user{$i}@example.com",
+            ], [
+                'nombre' => "User {$i}",
+                'password' => 'password',
+                'activo' => true,
+            ]);
+            $u->roles()->syncWithoutDetaching([$userRole->id]);
+            $users[] = $u;
+        }
 
-        // Asignar roles
+        // Asignar rol ADMIN al admin (solo uno)
         $admin->roles()->syncWithoutDetaching([$adminRole->id]);
-        $user->roles()->syncWithoutDetaching([$userRole->id]);
 
         // Proyectos
+        // Crear proyectos creados por usuarios (rol USER)
         $proyectoA = Proyecto::create([
             'titulo' => 'Proyecto A',
             'descripcion' => 'Proyecto de ejemplo A',
-            'creado_por' => $admin->id,
+            'creado_por' => $users[0]->id,
         ]);
 
         $proyectoB = Proyecto::create([
             'titulo' => 'Proyecto B',
             'descripcion' => 'Proyecto de ejemplo B',
-            'creado_por' => $admin->id,
+            'creado_por' => $users[2]->id,
         ]);
 
-        // Vincular usuarios a proyectos (pivot rol_proyecto)
+        // Vincular usuarios (solo USERS) a proyectos (pivot rol_proyecto)
+        // Proyecto A: creator users[0], collaborator users[1]
         $proyectoA->usuarios()->syncWithoutDetaching([
-            $admin->id => ['rol_proyecto' => 'CREADOR'],
-            $user->id => ['rol_proyecto' => 'COLABORADOR'],
+            $users[0]->id => ['rol_proyecto' => 'CREADOR'],
+            $users[1]->id => ['rol_proyecto' => 'COLABORADOR'],
         ]);
 
+        // Proyecto B: creator users[2], collaborator users[3]
         $proyectoB->usuarios()->syncWithoutDetaching([
-            $admin->id => ['rol_proyecto' => 'CREADOR'],
-            $user->id => ['rol_proyecto' => 'COLABORADOR'],
+            $users[2]->id => ['rol_proyecto' => 'CREADOR'],
+            $users[3]->id => ['rol_proyecto' => 'COLABORADOR'],
         ]);
 
         // Tareas: 2 tareas en proyectoA, 1 tarea en proyectoB
+
         $tarea1 = Tarea::create([
             'titulo' => 'Tarea 1 - Proyecto A',
             'descripcion' => 'Primera tarea del proyecto A',
             'proyecto_id' => $proyectoA->id,
-            'asignado_a' => $user->id,
-            'creado_por' => $admin->id,
+            'asignado_a' => $users[0]->id,
+            'creado_por' => $users[0]->id,
         ]);
+
 
         $tarea2 = Tarea::create([
             'titulo' => 'Tarea 2 - Proyecto A',
             'descripcion' => 'Segunda tarea del proyecto A',
             'proyecto_id' => $proyectoA->id,
-            'asignado_a' => $admin->id,
-            'creado_por' => $admin->id,
+            'asignado_a' => $users[1]->id,
+            'creado_por' => $users[0]->id,
         ]);
 
         $tarea3 = Tarea::create([
             'titulo' => 'Tarea 1 - Proyecto B',
             'descripcion' => 'Primera tarea del proyecto B',
             'proyecto_id' => $proyectoB->id,
-            'asignado_a' => $user->id,
-            'creado_por' => $admin->id,
+            'asignado_a' => $users[2]->id,
+            'creado_por' => $users[2]->id,
         ]);
 
         // Comentario en una tarea (tarea1)
         Comentario::create([
             'texto' => 'Este es un comentario de ejemplo en la tarea 1',
             'tarea_id' => $tarea1->id,
-            'usuario_id' => $user->id,
+            'usuario_id' => $users[0]->id,
         ]);
     }
 }

@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import './styles/dark-vars.css';
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Small helpers to visualize dark mode when Tailwind is configured for class strategy */
 .light {

@@ -24,10 +24,30 @@ export const updateProyecto = (id, data) =>
 export const deleteProyecto = (id) =>
   axiosClient.delete(`${API_ENDPOINT}/${id}`);
 
+// Obtener usuarios no asignados a un proyecto (acepta filtros: nombre, email)
+export const getUsuariosNoAsignados = (projectId, params = {}) =>
+  axiosClient.get(`/proyectos/${projectId}/usuarios/no-asignados`, { params });
+
+// Asignar un usuario a un proyecto: { usuario_id, rol_proyecto }
+export const assignUsuarioProyecto = (projectId, body) =>
+  axiosClient.post(`/proyectos/${projectId}/usuarios`, toApiPayload(body));
+
+// Obtener usuarios asignados al proyecto (acepta filtro: nombre)
+export const getUsuariosAsignados = (projectId, params = {}) =>
+  axiosClient.get(`/proyectos/${projectId}/usuarios`, { params });
+
+// Eliminar asignación de un usuario del proyecto
+export const deleteUsuarioProyecto = (projectId, usuarioId) =>
+  axiosClient.delete(`/proyectos/${projectId}/usuarios/${usuarioId}`);
+
 export default {
   getProyectos,
   getProyectoById,
   createProyecto,
   updateProyecto,
+  getUsuariosNoAsignados,
+  assignUsuarioProyecto,
+  getUsuariosAsignados,
+  deleteUsuarioProyecto,
   deleteProyecto,
 };

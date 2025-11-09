@@ -4,6 +4,7 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import UserDashboard from "../pages/user/UserDashboard";
+import ProjectDetail from "../pages/user/ProjectDetail";
 
 // Helpers simples basados en localStorage
 const isAuthenticated = () => !!localStorage.getItem("api_token");
@@ -62,6 +63,15 @@ function AppRoutes() {
             <RequireRole role="USER">
               <UserDashboard />
             </RequireRole>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/projects/:id"
+        element={
+          <RequireAuth>
+            <ProjectDetail />
           </RequireAuth>
         }
       />

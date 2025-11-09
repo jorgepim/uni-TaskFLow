@@ -9,6 +9,7 @@ use App\Http\Resources\TareaResource;
 use App\Models\Tarea;
 use App\Services\TareaService;
 use Illuminate\Http\Request;
+use App\Http\Requests\UpdateTareaEstadoRequest;
 
 class TareaController extends Controller
 {
@@ -81,6 +82,36 @@ class TareaController extends Controller
         $data = ($request instanceof UpdateTareaRequest) ? $request->validated() : $request->all();
         $tarea = $this->service->update($tarea, $data);
         return $this->successResponse('Tarea actualizada', new TareaResource($tarea));
+    }
+
+    /**
+     * Actualizar únicamente el estado de una tarea.
+     * Solo puede hacerlo el usuario asignado a la tarea o el usuario que sea CREADOR del proyecto.
+     */
+    public function updateEstado(UpdateTareaEstadoRequest $request, Tarea $tarea)
+    {
+        $user = $request->user();
+
+        // Verificar si es el usuario asignado
+        $isAsignado = $user && $tarea->asignado_a && $user->id === (int) $tarea->asignado_a;
+
+        // Verificar si el usuario es CREADOR en el proyecto (buscar pivot)
+        $isCreador = false;
+        if ($user) {
+            $relation = $user->proyectos()->where('proyectos.id', $tarea->proyecto_id)->first();
+            if ($relation && isset($relation->pivot) && isset($relation->pivot->rol_proyecto)) {
+                $isCreador = $relation->pivot->rol_proyecto === 'CREADOR';
+            }
+        }
+
+        if (! $isAsignado && ! $isCreador) {
+            return $this->errorResponse('No autorizado para cambiar el estado de esta tarea', 403);
+        }
+
+        $data = $request->validated();
+        $tarea = $this->service->update($tarea, ['estado' => $data['estado']]);
+
+        return $this->successResponse('Estado de tarea actualizado', new TareaResource($tarea));
     }
 
     /**

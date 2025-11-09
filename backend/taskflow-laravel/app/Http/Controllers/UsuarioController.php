@@ -10,6 +10,7 @@ use App\Http\Resources\UsuarioResource;
 use App\Models\Usuario;
 use App\Services\UsuarioService;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class UsuarioController extends Controller
 {
@@ -87,13 +88,54 @@ class UsuarioController extends Controller
         return $this->successResponse('Usuario eliminado', null);
     }
 
+
+    // public function misProyectos(Request $request)
+    // {
+    //     $user = $request->user();
+    //     $proyectos = $user->proyectos()->with('tareas')->get();
+
+    //     return $this->successResponse('Proyectos del usuario', ProyectoResource::collection($proyectos));
+    // }
     /**
      * Obtener los proyectos en los que participa el usuario autenticado (desde token)
      */
     public function misProyectos(Request $request)
     {
         $user = $request->user();
-        $proyectos = $user->proyectos()->with('tareas')->get();
+
+        // Query base: proyectos del usuario
+        $query = $user->proyectos();
+
+        // Filtros opcionales: titulo (buscar con LIKE), rango de fechas sobre fecha_creacion
+        if ($request->filled('titulo')) {
+            $titulo = $request->get('titulo');
+            $query->where('titulo', 'like', '%' . $titulo . '%');
+        }
+
+        // Fecha inicio y fin (esperadas en formato YYYY-MM-DD)
+        $fechaInicio = $request->get('fecha_inicio');
+        $fechaFin = $request->get('fecha_fin');
+
+        if ($fechaInicio) {
+            try {
+                $start = Carbon::parse($fechaInicio)->startOfDay();
+                $query->where('fecha_creacion', '>=', $start);
+            } catch (\Exception $e) {
+                // ignorar filtro si la fecha es inválida
+            }
+        }
+
+        if ($fechaFin) {
+            try {
+                $end = Carbon::parse($fechaFin)->endOfDay();
+                $query->where('fecha_creacion', '<=', $end);
+            } catch (\Exception $e) {
+                // ignorar filtro si la fecha es inválida
+            }
+        }
+
+        // Obtener solo la información de proyectos (sin cargar tareas)
+        $proyectos = $query->get();
 
         return $this->successResponse('Proyectos del usuario', ProyectoResource::collection($proyectos));
     }

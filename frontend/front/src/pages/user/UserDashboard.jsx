@@ -2,13 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../api/endpoints/authApi";
 import Navbar from "../../components/layout/Navbar";
-import { getMyProyectos } from "../../api/endpoints/proyectosApi";
+import {
+  getMyProyectos,
+  createProyecto,
+} from "../../api/endpoints/proyectosApi";
+import Modal from "../../components/ui/Modal";
 
 export default function UserDashboard() {
   const navigate = useNavigate();
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newTitulo, setNewTitulo] = useState("");
+  const [newDescripcion, setNewDescripcion] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState(null);
 
   const handleLogout = async () => {
     try {
@@ -44,26 +53,79 @@ export default function UserDashboard() {
 
   useEffect(() => {
     let mounted = true;
-    const load = async () => {
+    const fetchProjects = async (params = {}) => {
       setLoading(true);
       setError(null);
       try {
-        const res = await getMyProyectos();
+        const res = await getMyProyectos(params);
         if (mounted) setProyectos(res.data?.data || []);
       } catch (err) {
-        setError(err?.response?.data?.message || err.message || "Error cargando proyectos");
+        setError(
+          err?.response?.data?.message ||
+            err.message ||
+            "Error cargando proyectos"
+        );
       } finally {
         if (mounted) setLoading(false);
       }
     };
-    void load();
+
+    // initial load
+    void fetchProjects();
     return () => {
       mounted = false;
     };
   }, []);
 
+  // filter state
+  const [tituloFilter, setTituloFilter] = useState("");
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
+
+  const handleFilter = async (e) => {
+    e?.preventDefault();
+    const params = {};
+    if (tituloFilter) params.titulo = tituloFilter;
+    if (fechaInicio) params.fecha_inicio = fechaInicio;
+    if (fechaFin) params.fecha_fin = fechaFin;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getMyProyectos(params);
+      setProyectos(res.data?.data || []);
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+          err.message ||
+          "Error cargando proyectos"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClear = async () => {
+    setTituloFilter("");
+    setFechaInicio("");
+    setFechaFin("");
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await getMyProyectos();
+      setProyectos(res.data?.data || []);
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+          err.message ||
+          "Error cargando proyectos"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-linear-to-b from-white to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <Navbar
         brand="Mi espacio"
         userName={userName}
@@ -71,15 +133,168 @@ export default function UserDashboard() {
         onLogout={handleLogout}
       />
       <main className="p-8">
-        <h2 className="text-black dark:text-white text-2xl font-bold mb-4">Tablero de Usuario</h2>
+        <h2 className="text-black dark:text-white text-2xl font-bold mb-4">
+          Tablero de Usuario
+        </h2>
 
-        {loading && (
-          <div className="p-4">Cargando proyectos...</div>
-        )}
+        <div className="mb-4">
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="px-4 py-2 bg-green-600 text-white rounded-md"
+          >
+            + Crear proyecto
+          </button>
+        </div>
+        {/* filtros */}
+        <form
+          className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-3 items-end"
+          onSubmit={handleFilter}
+        >
+          <div>
+            <label className="block text-sm text-gray-600 dark:text-gray-300">
+              Título
+            </label>
+            <input
+              value={tituloFilter}
+              onChange={(e) => setTituloFilter(e.target.value)}
+              className="mt-1 w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              placeholder="Buscar por título"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 dark:text-gray-300">
+              Fecha inicio
+            </label>
+            <input
+              type="date"
+              value={fechaInicio}
+              onChange={(e) => setFechaInicio(e.target.value)}
+              className="mt-1 w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 dark:text-gray-300">
+              Fecha fin
+            </label>
+            <input
+              type="date"
+              value={fechaFin}
+              onChange={(e) => setFechaFin(e.target.value)}
+              className="mt-1 w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md"
+            >
+              Filtrar
+            </button>
+            <button
+              type="button"
+              onClick={handleClear}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md"
+            >
+              Limpiar
+            </button>
+          </div>
+        </form>
 
-        {error && (
-          <div className="p-4 text-red-600">{String(error)}</div>
-        )}
+        {loading && <div className="p-4">Cargando proyectos...</div>}
+
+        {error && <div className="p-4 text-red-600">{String(error)}</div>}
+
+        {/* Modal crear proyecto */}
+        <Modal
+          isOpen={isCreateOpen}
+          onClose={() => {
+            if (!creating) {
+              setIsCreateOpen(false);
+              setNewTitulo("");
+              setNewDescripcion("");
+              setCreateError(null);
+            }
+          }}
+          title="Crear nuevo proyecto"
+        >
+          <div className="space-y-3">
+            {createError && <div className="text-red-600">{createError}</div>}
+            <div>
+              <label className="block text-sm text-gray-600 dark:text-gray-300">
+                Título
+              </label>
+              <input
+                value={newTitulo}
+                onChange={(e) => setNewTitulo(e.target.value)}
+                className="mt-1 w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                placeholder="Proyecto Ejemplo Jorge"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 dark:text-gray-300">
+                Descripción (opcional)
+              </label>
+              <textarea
+                value={newDescripcion}
+                onChange={(e) => setNewDescripcion(e.target.value)}
+                className="mt-1 w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                placeholder="Descripción opcional"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  if (!creating) {
+                    setIsCreateOpen(false);
+                    setNewTitulo("");
+                    setNewDescripcion("");
+                    setCreateError(null);
+                  }
+                }}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-md"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  setCreateError(null);
+                  if (!newTitulo.trim()) {
+                    setCreateError("El título es requerido");
+                    return;
+                  }
+                  setCreating(true);
+                  try {
+                    await createProyecto({
+                      titulo: newTitulo,
+                      descripcion: newDescripcion,
+                    });
+                    // reload proyectos
+                    setIsCreateOpen(false);
+                    setNewTitulo("");
+                    setNewDescripcion("");
+                    setCreateError(null);
+                    setLoading(true);
+                    const res = await getMyProyectos();
+                    setProyectos(res.data?.data || []);
+                  } catch (err) {
+                    setCreateError(
+                      err?.response?.data?.message ||
+                        err.message ||
+                        "Error creando proyecto"
+                    );
+                  } finally {
+                    setCreating(false);
+                    setLoading(false);
+                  }
+                }}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md"
+                disabled={creating}
+              >
+                {creating ? "Creando..." : "Crear proyecto"}
+              </button>
+            </div>
+          </div>
+        </Modal>
 
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -92,36 +307,23 @@ export default function UserDashboard() {
             {proyectos.map((p) => (
               <div
                 key={p.id}
-                className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow cursor-pointer text-gray-900 dark:text-gray-100"
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate(`/projects/${p.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") navigate(`/projects/${p.id}`);
+                }}
+                className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition cursor-pointer text-gray-900 dark:text-gray-100"
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold">{p.titulo}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">{p.descripcion}</p>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">Creado: {p.fecha_creacion}</div>
+                    <h3 className="text-lg font-semibold mb-1">{p.titulo}</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      {p.descripcion}
+                    </p>
                   </div>
-                </div>
-
-                <div className="mt-4">
-                  <h4 className="text-sm font-medium mb-2">Tareas</h4>
-                  <div className="space-y-2">
-                    {Array.isArray(p.tareas) && p.tareas.length > 0 ? (
-                      p.tareas.map((t) => (
-                        <div
-                          key={t.id}
-                          className="flex items-center justify-between p-2 rounded-md bg-gray-50 dark:bg-gray-700/60"
-                        >
-                          <div className="text-sm">{t.titulo}</div>
-                          <div>
-                            <span className={`px-2 py-1 text-xs rounded-full ${t.estado === 'PENDIENTE' ? 'bg-yellow-400 text-black' : t.estado === 'COMPLETADA' ? 'bg-green-400 text-black' : 'bg-gray-300 text-black'}`}>
-                              {t.estado}
-                            </span>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-sm text-gray-600 dark:text-gray-300">No hay tareas</div>
-                    )}
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {p.fecha_creacion}
                   </div>
                 </div>
               </div>

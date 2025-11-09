@@ -13,7 +13,15 @@ class ProyectoResource extends JsonResource
       'titulo' => $this->titulo,
       'descripcion' => $this->descripcion,
       'fecha_creacion' => $this->fecha_creacion,
-      'creado_por' => $this->creado_por,
+      // Devolver creador como objeto si la relación fue cargada, si no devolver el id
+      'creado_por' => $this->whenLoaded('creadoPor', function () {
+        return [
+          'id' => $this->creadoPor->id,
+          'nombre' => $this->creadoPor->nombre,
+        ];
+      }, $this->creado_por),
+      // Rol del usuario dentro de este proyecto (desde el pivot usuario_proyecto)
+      'rol_proyecto' => isset($this->pivot) && isset($this->pivot->rol_proyecto) ? $this->pivot->rol_proyecto : null,
       // Incluir tareas asociadas (solo campos requeridos) cuando estén cargadas
       'tareas' => $this->whenLoaded('tareas', function () {
         return $this->tareas->map(function ($t) {

@@ -65,10 +65,21 @@ class ProyectoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Proyecto $proyecto)
+    public function show(Request $request, Proyecto $proyecto)
     {
         // Cargar tareas y la relación del usuario asignado para cada tarea
-        $proyecto->load(['tareas.asignadoA']);
+        $proyecto->load(['tareas.asignadoA', 'creadoPor']);
+
+        // Si hay un usuario autenticado, intentar obtener el rol_proyecto desde el pivot
+        $user = $request->user();
+        if ($user) {
+            $relation = $user->proyectos()->where('proyectos.id', $proyecto->id)->first();
+            if ($relation && isset($relation->pivot)) {
+                // Adjuntar el pivot al modelo para que ProyectoResource lo lea
+                $proyecto->pivot = $relation->pivot;
+            }
+        }
+
         return $this->successResponse('Proyecto encontrado', new ProyectoResource($proyecto));
     }
 

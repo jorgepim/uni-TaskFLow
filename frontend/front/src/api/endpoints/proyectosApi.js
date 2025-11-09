@@ -14,8 +14,8 @@ const toApiPayload = (form) => {
 
 export const getProyectos = (params = {}) =>
   axiosClient.get(API_ENDPOINT, { params });
-export const getMyProyectos = () =>
-  axiosClient.get(`/usuarios/me/proyectos`);
+export const getMyProyectos = (params = {}) =>
+  axiosClient.get(`/usuarios/me/proyectos`, { params });
 export const getProyectoById = (id) => axiosClient.get(`${API_ENDPOINT}/${id}`);
 export const createProyecto = (data) =>
   axiosClient.post(API_ENDPOINT, toApiPayload(data));

@@ -12,19 +12,25 @@ const toApiPayload = (form) => {
   return payload;
 };
 
-export const getTareas = (params = {}) =>
-  axiosClient.get(API_ENDPOINT, { params });
 export const getTareaById = (id) => axiosClient.get(`${API_ENDPOINT}/${id}`);
-export const createTarea = (data) =>
-  axiosClient.post(API_ENDPOINT, toApiPayload(data));
+
+// Create a tarea under a project
+export const createTarea = (projectId, data) =>
+  axiosClient.post(`/proyectos/${projectId}/tareas`, toApiPayload(data));
+
 export const updateTarea = (id, data) =>
   axiosClient.put(`${API_ENDPOINT}/${id}`, toApiPayload(data));
+
+// Update only the estado field using the backend's dedicated endpoint
+export const updateTareaEstado = (id, estado) =>
+  axiosClient.patch(`${API_ENDPOINT}/${id}/estado`, { estado });
+
 export const deleteTarea = (id) => axiosClient.delete(`${API_ENDPOINT}/${id}`);
 
 export default {
-  getTareas,
   getTareaById,
   createTarea,
   updateTarea,
+  updateTareaEstado,
   deleteTarea,
 };

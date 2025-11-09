@@ -29,6 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('usuarios/me/proyectos', [UsuarioController::class, 'misProyectos']);
     Route::apiResource('proyectos', ProyectoController::class);
     Route::apiResource('tareas', TareaController::class);
+    // Solo actualizar el estado de una tarea
+    Route::patch('tareas/{tarea}/estado', [TareaController::class, 'updateEstado']);
     Route::apiResource('comentarios', ComentarioController::class);
 });
 

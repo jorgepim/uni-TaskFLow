@@ -1,10 +1,73 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import UserDashboard from "../pages/user/UserDashboard";
+
+// Helpers simples basados en localStorage
+const isAuthenticated = () => !!localStorage.getItem("api_token");
+const getUserRoles = () => {
+  try {
+    const r = localStorage.getItem("user_roles");
+    return r ? JSON.parse(r) : [];
+  } catch {
+    return [];
+  }
+};
+
+function RequireAuth({ children }) {
+  const location = useLocation();
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return children;
+}
+
+function RequireRole({ role, children }) {
+  const roles = getUserRoles();
+  if (!roles.includes(role)) {
+    // Si no tiene el rol solicitado redirigimos al dashboard según rol real o login
+    if (!isAuthenticated()) return <Navigate to="/login" replace />;
+    const realRoles = roles;
+    if (realRoles.includes("ADMIN"))
+      return <Navigate to="/admin/dashboard" replace />;
+    return <Navigate to="/user/dashboard" replace />;
+  }
+  return children;
+}
 
 function AppRoutes() {
   return (
     <Routes>
-      
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <RequireAuth>
+            <RequireRole role="ADMIN">
+              <AdminDashboard />
+            </RequireRole>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/user/dashboard"
+        element={
+          <RequireAuth>
+            <RequireRole role="USER">
+              <UserDashboard />
+            </RequireRole>
+          </RequireAuth>
+        }
+      />
+
+      {/* Catch all */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

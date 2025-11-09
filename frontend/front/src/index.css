@@ -1,1 +1,11 @@
 @import 'tailwindcss';
+@import './styles/dark-vars.css';
+
+/* Small helpers to visualize dark mode when Tailwind is configured for class strategy */
+.light {
+  background-color: #ffffff;
+}
+
+.dark {
+  background-color: #0f172a;
+}

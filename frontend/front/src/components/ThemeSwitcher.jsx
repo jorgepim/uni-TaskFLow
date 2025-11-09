@@ -15,7 +15,7 @@ export default function ThemeSwitcher() {
         "p-2 rounded-full transition flex items-center justify-center cursor-pointer" +
         (isLight
           ? " hover:bg-gray-100" 
-          : " bg-black hover:bg-gray-600") 
+          : " hover:bg-gray-600") 
       }
       style={isLight ? { backgroundColor: "#ffffff" } : undefined}
     >

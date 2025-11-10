@@ -144,7 +144,8 @@ export default function Profile() {
                       type="checkbox"
                       checked={activo}
                       onChange={(e) => setActivo(e.target.checked)}
-                      disabled={!editing}
+                      // disabled={!editing}
+                      disabled={true}
                       className="form-checkbox h-5 w-5 text-indigo-600"
                     />
                     <span className="ml-2 text-gray-700 dark:text-gray-200">

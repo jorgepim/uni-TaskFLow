@@ -38,8 +38,6 @@ export default function AdminUsers() {
   const links = [
     { to: "/admin/dashboard", label: "Inicio" },
     { to: "/admin/users", label: "Usuarios" },
-    { to: "/admin/projects", label: "Proyectos" },
-    { to: "/admin/tasks", label: "Tareas" },
     { to: "/admin/stats/projects", label: "Est. Proyectos" },
     { to: "/admin/stats/tasks", label: "Est. Tareas" },
   ];
@@ -256,8 +254,26 @@ export default function AdminUsers() {
                 <div className="text-xs text-gray-500 dark:text-gray-300">
                   Por rol
                 </div>
-                <div className="font-semibold text-gray-900 dark:text-gray-100">
-                  {JSON.stringify(estadisticas.por_rol)}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {Object.entries(estadisticas?.por_rol || {}).map(
+                    ([role, count]) => (
+                      <span
+                        key={role}
+                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
+                          role === "ADMIN"
+                            ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100"
+                            : role === "USER"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
+                            : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
+                        }`}
+                      >
+                        <span className="uppercase">{role}</span>
+                        <span className="ml-1 bg-white/20 px-2 py-0.5 rounded-full text-sm font-bold">
+                          {count}
+                        </span>
+                      </span>
+                    )
+                  )}
                 </div>
               </div>
             </div>

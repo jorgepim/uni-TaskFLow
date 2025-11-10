@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../api/endpoints/authApi";
 import Navbar from "../../components/layout/Navbar";
@@ -47,20 +47,17 @@ export default function AdminDashboard() {
         links={links}
         onLogout={handleLogout}
       />
-      <main className="p-8">
-        <h2 className="text-2xl font-bold mb-4">Tablero de Administrador</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow cursor-pointer text-gray-900 dark:text-gray-100">
-            Usuarios - gestión rápida
-          </div>
-          <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow cursor-pointer text-gray-900 dark:text-gray-100">
-            Estadísticas - gráficos
-          </div>
-          <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow cursor-pointer text-gray-900 dark:text-gray-100">
-            Proyectos y Tareas
-          </div>
-        </div>
-      </main>
+      {/* Al cargar el dashboard redirigimos directamente a la vista de usuarios */}
+      <AdminDashboardRedirect />
     </div>
   );
+}
+
+function AdminDashboardRedirect() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    // Redirige a la lista de usuarios al entrar en el dashboard
+    navigate("/admin/users", { replace: true });
+  }, [navigate]);
+  return null;
 }

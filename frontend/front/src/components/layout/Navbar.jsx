@@ -41,7 +41,7 @@ export default function Navbar({
     }
   })();
   const profileLink = roles.includes("ADMIN")
-    ? "/admin/profile"
+    ? "/user/profile"
     : "/user/profile";
 
   return (

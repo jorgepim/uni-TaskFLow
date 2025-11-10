@@ -27,10 +27,52 @@ class UsuarioController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $usuarios = $this->service->all();
-        return $this->successResponse('Usuarios obtenidos', UsuarioResource::collection($usuarios));
+        // Construir query con filtros opcionales
+        $query = \App\Models\Usuario::with('roles');
+
+        if ($request->filled('nombre')) {
+            $nombre = $request->get('nombre');
+            $query->where('nombre', 'like', '%' . $nombre . '%');
+        }
+
+        if ($request->filled('email')) {
+            $email = $request->get('email');
+            $query->where('email', 'like', '%' . $email . '%');
+        }
+
+        if ($request->filled('rol')) {
+            $rol = $request->get('rol');
+            $query->whereHas('roles', function ($q) use ($rol) {
+                $q->where('nombre', $rol);
+            });
+        }
+
+        // Obtener usuarios filtrados
+        $usuarios = $query->get();
+
+        // Estadísticas basadas en el conjunto filtrado
+        $total = $usuarios->count();
+        $activos = $usuarios->where('activo', 1)->count();
+        $inactivos = $total - $activos;
+
+        // Conteo por rol dentro del conjunto filtrado
+        $countsPorRol = $usuarios->flatMap(function ($u) {
+            return $u->roles->pluck('nombre');
+        })->countBy()->toArray();
+
+        $estadisticas = [
+            'total' => $total,
+            'activos' => $activos,
+            'inactivos' => $inactivos,
+            'por_rol' => $countsPorRol,
+        ];
+
+        return $this->successResponse('Usuarios obtenidos', [
+            'usuarios' => UsuarioResource::collection($usuarios),
+            'estadisticas' => $estadisticas,
+        ]);
     }
 
     /**
@@ -113,10 +155,53 @@ class UsuarioController extends Controller
     }
 
     /**
+     * ADMIN: Actualizar cualquier campo de un usuario, incluyendo rol.
+     * Se espera opcionally payload: nombre, email, password, activo, rol
+     */
+    public function adminUpdate(\App\Http\Requests\AdminUpdateUsuarioRequest $request, Usuario $usuario)
+    {
+        $actor = $request->user();
+        if (! $actor || ! method_exists($actor, 'hasRole') || ! $actor->hasRole('ADMIN')) {
+            return $this->errorResponse('No autorizado', 403);
+        }
+
+        $data = $request->validated();
+
+        // Si password viene vacío o nulo, no sobreescribir
+        if (array_key_exists('password', $data) && empty($data['password'])) {
+            unset($data['password']);
+        }
+
+        // Actualizar campos básicos
+        $usuario = $this->service->update($usuario, $data);
+
+        // Si se proporcionó 'rol', sincronizar roles (reemplaza roles existentes)
+        if (array_key_exists('rol', $data) && $data['rol']) {
+            $rol = \App\Models\Rol::where('nombre', $data['rol'])->first();
+            if ($rol) {
+                $usuario->roles()->sync([$rol->id]);
+            }
+        }
+
+        $usuario->load('roles');
+        return $this->successResponse('Usuario actualizado por ADMIN', new UsuarioResource($usuario));
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Usuario $usuario)
     {
+        // Si el usuario está asignado a algún proyecto, no se elimina: se marca como inactivo
+        $asignadoProyectos = $usuario->proyectos()->exists();
+
+        if ($asignadoProyectos) {
+            $usuario->activo = 0;
+            $usuario->save();
+            return $this->successResponse('Usuario marcado como inactivo porque está asignado a proyectos', null);
+        }
+
+        // Si no está asignado a proyectos, se elimina realmente
         $this->service->delete($usuario);
         return $this->successResponse('Usuario eliminado', null);
     }

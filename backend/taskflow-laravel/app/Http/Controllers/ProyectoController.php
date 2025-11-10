@@ -129,7 +129,7 @@ class ProyectoController extends Controller
             $q->where('nombre', 'USER');
         })->whereDoesntHave('proyectos', function ($q) use ($proyecto) {
             $q->where('proyectos.id', $proyecto->id);
-        });
+        })->where('activo', 1);
 
         if ($request->filled('nombre')) {
             $query->where('nombre', 'like', '%' . $request->get('nombre') . '%');
@@ -192,7 +192,7 @@ class ProyectoController extends Controller
     public function usuariosAsignados(Request $request, Proyecto $proyecto)
     {
         // Base query: usuarios relacionados (incluye pivot)
-        $query = $proyecto->usuarios()->with('roles');
+        $query = $proyecto->usuarios()->with('roles')->where('activo', 1);
 
         // Filtrado opcional por nombre (LIKE)
         if ($request->filled('nombre')) {

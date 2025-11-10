@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminUsers from "../pages/admin/Users";
 import UserDashboard from "../pages/user/UserDashboard";
 import ProjectDetail from "../pages/user/ProjectDetail";
 import Profile from "../pages/user/Profile";
@@ -53,6 +54,17 @@ function AppRoutes() {
           <RequireAuth>
             <RequireRole role="ADMIN">
               <AdminDashboard />
+            </RequireRole>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/admin/users"
+        element={
+          <RequireAuth>
+            <RequireRole role="ADMIN">
+              <AdminUsers />
             </RequireRole>
           </RequireAuth>
         }

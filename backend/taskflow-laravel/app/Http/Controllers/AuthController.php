@@ -49,6 +49,11 @@ class AuthController extends Controller
       return $this->errorResponse('Credenciales inválidas', 401);
     }
 
+    // No permitir login para usuarios inactivos
+    if (isset($usuario->activo) && ! (bool) $usuario->activo) {
+      return $this->errorResponse('Usuario inactivo', 403);
+    }
+
     // Eliminar tokens antiguos opcional (por ejemplo single-session)
     // $usuario->tokens()->delete();
 

@@ -20,4 +20,16 @@ export const getUsuarioById = (id) => axiosClient.get(`/usuarios/${id}`);
 export const patchUsuario = (id, data) =>
   axiosClient.patch(`/usuarios/${id}`, toApiPayload(data));
 
+// List users with optional filters: nombre, email, rol
+export const getUsuarios = (params = {}) =>
+  axiosClient.get(`/usuarios`, { params });
+
+// Delete a user by id
+export const deleteUsuario = (id) => axiosClient.delete(`/usuarios/${id}`);
+
+// Admin update: backend exposes a special admin route to update user including roles
+// Example: POST /usuarios/:id/admin with body {_method: 'PATCH', nombre: 'Nuevo', roles: [1,2]}
+export const adminPatchUsuario = (id, data) =>
+  axiosClient.patch(`/usuarios/${id}/admin`, toApiPayload(data));
+
 export default { getCurrentUser };

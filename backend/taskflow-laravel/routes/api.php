@@ -31,6 +31,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('usuarios/{usuario}/tareas', [UsuarioController::class, 'tareasAsignadas']);
     // ADMIN: actualizar todos los campos de un usuario (incluyendo su rol)
     Route::patch('usuarios/{usuario}/admin', [UsuarioController::class, 'adminUpdate']);
+    // Estadísticas para dashboards (ADMIN)
+    Route::get('stats/proyectos', [\App\Http\Controllers\StatsController::class, 'proyectos']);
+    Route::get('stats/tareas', [\App\Http\Controllers\StatsController::class, 'tareas']);
     Route::apiResource('proyectos', ProyectoController::class);
     // Usuarios no asignados a un proyecto (solo ROLE = USER)
     Route::get('proyectos/{proyecto}/usuarios/no-asignados', [ProyectoController::class, 'usuariosNoAsignados']);

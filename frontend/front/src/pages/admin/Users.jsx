@@ -38,6 +38,10 @@ export default function AdminUsers() {
   const links = [
     { to: "/admin/dashboard", label: "Inicio" },
     { to: "/admin/users", label: "Usuarios" },
+    { to: "/admin/projects", label: "Proyectos" },
+    { to: "/admin/tasks", label: "Tareas" },
+    { to: "/admin/stats/projects", label: "Est. Proyectos" },
+    { to: "/admin/stats/tasks", label: "Est. Tareas" },
   ];
 
   const load = async (params = {}) => {

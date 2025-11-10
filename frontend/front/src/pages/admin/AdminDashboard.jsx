@@ -35,9 +35,8 @@ export default function AdminDashboard() {
   const links = [
     { to: "/admin/dashboard", label: "Inicio" },
     { to: "/admin/users", label: "Usuarios" },
-    { to: "/admin/stats", label: "Estadísticas" },
-    { to: "/admin/projects", label: "Proyectos" },
-    { to: "/admin/tasks", label: "Tareas" },
+    { to: "/admin/stats/projects", label: "Est. Proyectos" },
+    { to: "/admin/stats/tasks", label: "Est. Tareas" },
   ];
 
   return (

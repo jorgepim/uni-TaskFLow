@@ -4,6 +4,8 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminUsers from "../pages/admin/Users";
+import StatsProjects from "../pages/admin/StatsProjects";
+import StatsTasks from "../pages/admin/StatsTasks";
 import UserDashboard from "../pages/user/UserDashboard";
 import ProjectDetail from "../pages/user/ProjectDetail";
 import Profile from "../pages/user/Profile";
@@ -57,6 +59,33 @@ function AppRoutes() {
             </RequireRole>
           </RequireAuth>
         }
+      />
+
+      <Route
+        path="/admin/stats/projects"
+        element={
+          <RequireAuth>
+            <RequireRole role="ADMIN">
+              <StatsProjects />
+            </RequireRole>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/admin/stats/tasks"
+        element={
+          <RequireAuth>
+            <RequireRole role="ADMIN">
+              <StatsTasks />
+            </RequireRole>
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/admin/stats"
+        element={<Navigate to="/admin/stats/projects" replace />}
       />
 
       <Route

@@ -42,3 +42,11 @@ export default {
   updateTareaEstado,
   deleteTarea,
 };
+
+// Get tareas for a specific usuario (by id) with optional filters
+export const getUsuarioTareas = (usuarioId, params = {}) =>
+  axiosClient.get(`/usuarios/${usuarioId}/tareas`, { params });
+
+// Get tareas for the current authenticated user (/usuarios/me/tareas)
+export const getMyTareas = (params = {}) =>
+  axiosClient.get(`/usuarios/me/tareas`, { params });

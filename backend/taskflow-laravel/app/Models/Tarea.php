@@ -27,7 +27,6 @@ class Tarea extends Model
         'PENDIENTE',
         'PROGRESO',
         'COMPLETADA',
-        'BLOQUEADA',
     ];
 
     public function proyecto()

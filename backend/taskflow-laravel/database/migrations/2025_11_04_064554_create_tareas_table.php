@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('titulo', 150);
             $table->text('descripcion')->nullable();
             $table->date('fecha_vencimiento')->nullable();
-            $table->enum('estado', ['PENDIENTE', 'PROGRESO', 'COMPLETADA', 'BLOQUEADA'])->default('PENDIENTE');
+            $table->enum('estado', ['PENDIENTE', 'PROGRESO', 'COMPLETADA'])->default('PENDIENTE');
             $table->foreignId('proyecto_id')->constrained('proyectos')->onDelete('cascade');
             $table->foreignId('asignado_a')->nullable()->constrained('usuarios')->nullOnDelete();
             $table->foreignId('creado_por')->constrained('usuarios')->onDelete('cascade');

@@ -359,9 +359,17 @@ export default function ProjectDetail() {
           <div>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {project.titulo}
-                </h1>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => window.history.back()}
+                    className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-md"
+                  >
+                    ← Volver
+                  </button>
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {project.titulo}
+                  </h1>
+                </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
                   {project.descripcion}
                 </p>

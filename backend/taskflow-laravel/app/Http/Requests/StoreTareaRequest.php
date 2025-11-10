@@ -17,7 +17,7 @@ class StoreTareaRequest extends FormRequest
       'titulo' => 'required|string|max:150',
       'descripcion' => 'nullable|string',
       'fecha_vencimiento' => 'nullable|date',
-      'estado' => 'nullable|in:PENDIENTE,PROGRESO,COMPLETADA,BLOQUEADA',
+      'estado' => 'nullable|in:PENDIENTE,PROGRESO,COMPLETADA',
       'proyecto_id' => 'required|integer|exists:proyectos,id',
       'asignado_a' => 'nullable|integer|exists:usuarios,id',
       'creado_por' => 'required|integer|exists:usuarios,id',

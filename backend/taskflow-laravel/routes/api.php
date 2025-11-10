@@ -27,6 +27,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('usuarios', UsuarioController::class);
     // Obtener proyectos del usuario autenticado
     Route::get('usuarios/me/proyectos', [UsuarioController::class, 'misProyectos']);
+    Route::patch('usuarios/{usuario}/rol', [UsuarioController::class, 'cambiarRol']);
+    Route::get('usuarios/{usuario}/tareas', [UsuarioController::class, 'tareasAsignadas']);
     Route::apiResource('proyectos', ProyectoController::class);
     // Usuarios no asignados a un proyecto (solo ROLE = USER)
     Route::get('proyectos/{proyecto}/usuarios/no-asignados', [ProyectoController::class, 'usuariosNoAsignados']);

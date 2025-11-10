@@ -18,8 +18,16 @@ export const getTareaById = (id) => axiosClient.get(`${API_ENDPOINT}/${id}`);
 export const createTarea = (projectId, data) =>
   axiosClient.post(`/proyectos/${projectId}/tareas`, toApiPayload(data));
 
+// Create tarea using global endpoint /tareas (body must include proyecto_id)
+export const createTareaGlobal = (data) =>
+  axiosClient.post(`${API_ENDPOINT}`, toApiPayload(data));
+
 export const updateTarea = (id, data) =>
   axiosClient.put(`${API_ENDPOINT}/${id}`, toApiPayload(data));
+
+// Partial update using PATCH (edición parcial de campos)
+export const patchTarea = (id, data) =>
+  axiosClient.patch(`${API_ENDPOINT}/${id}`, toApiPayload(data));
 
 // Update only the estado field using the backend's dedicated endpoint
 export const updateTareaEstado = (id, estado) =>

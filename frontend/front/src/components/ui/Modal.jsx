@@ -11,11 +11,11 @@ export default function Modal({ isOpen, onClose, title, children }) {
 
   const modal = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
       onMouseDown={onBackdropClick}
     >
       <div
-        className="card w-full max-w-2xl p-6 text-text"
+        className="w-full max-w-2xl p-6 bg-white dark:bg-gray-800 text-text rounded-lg shadow-lg"
         role="dialog"
         aria-modal="true"
         onMouseDown={(e) => e.stopPropagation()}

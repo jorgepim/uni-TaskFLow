@@ -62,7 +62,7 @@ class TareaController extends Controller
     public function show(Tarea $tarea)
     {
         // Cargar creador y comentarios + usuario de cada comentario
-        $tarea->load(['creador', 'comentarios.usuario']);
+        $tarea->load(['creador', 'asignadoA', 'comentarios.usuario']);
         return $this->successResponse('Tarea encontrada', new TareaResource($tarea));
     }
 

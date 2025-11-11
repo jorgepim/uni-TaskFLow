@@ -16,6 +16,7 @@ import com.doublevistudio.api.repository.UsuarioProyectoRepository;
 import com.doublevistudio.api.repository.UsuarioRepository;
 import com.doublevistudio.api.repository.RolRepository;
 import com.doublevistudio.api.repository.UsuarioRolRepository;
+import com.doublevistudio.api.repository.ComentarioRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping("/api/proyectos")
@@ -50,6 +52,9 @@ public class ProyectoController {
 
     @Autowired
     private UsuarioRolRepository usuarioRolRepository;
+
+    @Autowired
+    private ComentarioRepository comentarioRepository;
 
     private static final DateTimeFormatter OUT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -232,11 +237,8 @@ public class ProyectoController {
                 .filter(Objects::nonNull)
                 .filter(u -> Boolean.TRUE.equals(u.getActivo()))
                 .filter(u -> !asignadosIds.contains(u.getId()))
-                .filter(u -> {
-                    if (nombreFilter != null && (u.getNombre() == null || !u.getNombre().toLowerCase().contains(nombreFilter))) return false;
-                    if (emailFilter != null && (u.getEmail() == null || !u.getEmail().toLowerCase().contains(emailFilter))) return false;
-                    return true;
-                })
+                .filter(u -> (nombreFilter == null || (u.getNombre() != null && u.getNombre().toLowerCase().contains(nombreFilter)))
+                        && (emailFilter == null || (u.getEmail() != null && u.getEmail().toLowerCase().contains(emailFilter))))
                 .map(u -> {
                     Map<String, Object> m = new HashMap<>();
                     m.put("id", u.getId());
@@ -250,6 +252,66 @@ public class ProyectoController {
         ResponseWrapper<List<Map<String, Object>>> wrap = new ResponseWrapper<>();
         wrap.setStatus("success");
         wrap.setMessage("Usuarios no asignados al proyecto");
+        wrap.setTimestamp(Instant.now());
+        wrap.setData(result);
+        return ResponseEntity.ok(wrap);
+    }
+
+    // Nuevo endpoint: listar usuarios asignados a un proyecto (con filtro por nombre opcional)
+    @GetMapping(value = "/{id}/usuarios", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseWrapper<List<Map<String, Object>>>> getUsuariosAsignados(
+            @PathVariable("id") Long id,
+            @RequestParam(required = false) String nombre
+    ) {
+        // verificar proyecto existe
+        Optional<Proyecto> opt = proyectoRepository.findById(id);
+        if (opt.isEmpty()) {
+            ResponseWrapper<List<Map<String, Object>>> w = new ResponseWrapper<>();
+            w.setStatus("error");
+            w.setMessage("Proyecto no encontrado");
+            w.setTimestamp(Instant.now());
+            w.setData(null);
+            return ResponseEntity.status(404).body(w);
+        }
+
+        final String nombreFilter = nombre == null ? null : nombre.trim().toLowerCase();
+
+        List<UsuarioProyecto> asignados = usuarioProyectoRepository.findByIdProyectoId(id);
+
+        List<Map<String, Object>> result = asignados.stream()
+                .map(up -> {
+                    Usuario u = up.getUsuario();
+                    if (u == null) return null;
+                    if (nombreFilter != null && (u.getNombre() == null || !u.getNombre().toLowerCase().contains(nombreFilter))) return null;
+
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("id", u.getId());
+                    m.put("nombre", u.getNombre());
+                    m.put("email", u.getEmail());
+                    m.put("activo", u.getActivo());
+                    m.put("fecha_creacion", u.getFechaCreacion() != null ? u.getFechaCreacion().format(OUT_FMT) : null);
+
+                    // roles del usuario
+                    List<com.doublevistudio.api.model.UsuarioRol> userRoles = usuarioRolRepository.findByIdUsuarioId(u.getId());
+                    List<Map<String, Object>> rolesList = userRoles.stream().map(ur -> {
+                        Map<String, Object> rm = new HashMap<>();
+                        rm.put("id", ur.getRol().getId());
+                        rm.put("nombre", ur.getRol().getNombre());
+                        return rm;
+                    }).collect(Collectors.toList());
+                    m.put("roles", rolesList);
+
+                    // rol en el proyecto
+                    m.put("rol_proyecto", up.getRolProyecto() != null ? up.getRolProyecto().name() : null);
+
+                    return m;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        ResponseWrapper<List<Map<String, Object>>> wrap = new ResponseWrapper<>();
+        wrap.setStatus("success");
+        wrap.setMessage("Usuarios asignados al proyecto");
         wrap.setTimestamp(Instant.now());
         wrap.setData(result);
         return ResponseEntity.ok(wrap);
@@ -330,4 +392,108 @@ public class ProyectoController {
         wrap.setData(data);
         return ResponseEntity.ok(wrap);
     }
+
+    // Eliminar asignación de usuario a proyecto
+    @DeleteMapping(value = "/{id}/usuarios/{idUser}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseWrapper<Object>> removeUserAssignment(@PathVariable("id") Long id,
+                                                                         @PathVariable("idUser") Long idUser) {
+        // verificar proyecto
+        Optional<Proyecto> opt = proyectoRepository.findById(id);
+        if (opt.isEmpty()) {
+            ResponseWrapper<Object> w = new ResponseWrapper<>();
+            w.setStatus("error");
+            w.setMessage("Proyecto no encontrado");
+            w.setTimestamp(Instant.now());
+            w.setData(null);
+            return ResponseEntity.status(404).body(w);
+        }
+
+        // verificar asignación existe
+        UsuarioProyectoId upId = new UsuarioProyectoId(idUser, id);
+        Optional<UsuarioProyecto> upOpt = usuarioProyectoRepository.findById(upId);
+        if (upOpt.isEmpty()) {
+            ResponseWrapper<Object> w = new ResponseWrapper<>();
+            w.setStatus("error");
+            w.setMessage("Asignación no encontrada");
+            w.setTimestamp(Instant.now());
+            w.setData(null);
+            return ResponseEntity.status(404).body(w);
+        }
+
+        usuarioProyectoRepository.delete(upOpt.get());
+
+        ResponseWrapper<Object> wrap = new ResponseWrapper<>();
+        wrap.setStatus("success");
+        wrap.setMessage("Asignación eliminada");
+        wrap.setTimestamp(Instant.now());
+        wrap.setData(null);
+        return ResponseEntity.ok(wrap);
+    }
+
+    // Eliminar proyecto (solo creador puede)
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    public ResponseEntity<ResponseWrapper<Object>> deleteProject(HttpServletRequest request, @PathVariable("id") Long id) {
+        Optional<Proyecto> opt = proyectoRepository.findById(id);
+        if (opt.isEmpty()) {
+            ResponseWrapper<Object> w = new ResponseWrapper<>();
+            w.setStatus("error");
+            w.setMessage("Proyecto no encontrado");
+            w.setTimestamp(Instant.now());
+            w.setData(null);
+            return ResponseEntity.status(404).body(w);
+        }
+        Proyecto p = opt.get();
+
+        // verificar que el usuario autenticado sea el creador
+        Object attr = request.getAttribute("currentUserId");
+        if (attr == null) {
+            ResponseWrapper<Object> w = new ResponseWrapper<>();
+            w.setStatus("error");
+            w.setMessage("No autorizado");
+            w.setTimestamp(Instant.now());
+            w.setData(null);
+            return ResponseEntity.status(401).body(w);
+        }
+        Long userId = Long.valueOf(String.valueOf(attr));
+
+        if (p.getCreadoPor() == null || !p.getCreadoPor().equals(userId)) {
+            ResponseWrapper<Object> w = new ResponseWrapper<>();
+            w.setStatus("error");
+            w.setMessage("Solo el creador del proyecto puede eliminarlo");
+            w.setTimestamp(Instant.now());
+            w.setData(null);
+            return ResponseEntity.status(403).body(w);
+        }
+
+        // eliminar relaciones usuario_proyecto
+        List<UsuarioProyecto> ups = usuarioProyectoRepository.findByIdProyectoId(id);
+        if (ups != null && !ups.isEmpty()) {
+            usuarioProyectoRepository.deleteAll(ups);
+        }
+
+        // obtener tareas del proyecto y eliminar sus comentarios
+        List<Tarea> tareas = tareaRepository.findByProyectoId(id);
+        if (tareas != null && !tareas.isEmpty()) {
+            for (Tarea t : tareas) {
+                List<com.doublevistudio.api.model.Comentario> comentarios = comentarioRepository.findByTareaId(t.getId());
+                if (comentarios != null && !comentarios.isEmpty()) {
+                    comentarioRepository.deleteAll(comentarios);
+                }
+            }
+            // eliminar tareas
+            tareaRepository.deleteAll(tareas);
+        }
+
+        // eliminar el proyecto
+        proyectoRepository.delete(p);
+
+        ResponseWrapper<Object> wrap = new ResponseWrapper<>();
+        wrap.setStatus("success");
+        wrap.setMessage("Proyecto eliminado");
+        wrap.setTimestamp(Instant.now());
+        wrap.setData(null);
+        return ResponseEntity.ok(wrap);
+    }
+
 }

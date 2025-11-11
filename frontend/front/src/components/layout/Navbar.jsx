@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ThemeSwitcher from "../ThemeSwitcher";
+import { logout as apiLogout } from "../../api/endpoints/authApi";
 
 export default function Navbar({
   brand = "App",
@@ -8,6 +9,7 @@ export default function Navbar({
   links = [],
   onLogout,
 }) {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef(null);
@@ -118,9 +120,25 @@ export default function Navbar({
                   <ThemeSwitcher />
                 </div>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setOpen(false);
-                    if (onLogout) onLogout();
+                    if (onLogout) {
+                      onLogout();
+                      return;
+                    }
+                    try {
+                      await apiLogout();
+                    } catch (err) {
+                      void err;
+                    }
+                    try {
+                      localStorage.removeItem("api_token");
+                      localStorage.removeItem("user");
+                      localStorage.removeItem("user_roles");
+                    } catch (err) {
+                      void err;
+                    }
+                    navigate("/login", { replace: true });
                   }}
                   className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                 >
@@ -165,9 +183,25 @@ export default function Navbar({
                   <ThemeSwitcher />
                 </div>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setMobileOpen(false);
-                    if (onLogout) onLogout();
+                    if (onLogout) {
+                      onLogout();
+                      return;
+                    }
+                    try {
+                      await apiLogout();
+                    } catch (err) {
+                      void err;
+                    }
+                    try {
+                      localStorage.removeItem("api_token");
+                      localStorage.removeItem("user");
+                      localStorage.removeItem("user_roles");
+                    } catch (err) {
+                      void err;
+                    }
+                    navigate("/login", { replace: true });
                   }}
                   className="w-full text-left px-2 py-2 text-red-600 cursor-pointer"
                 >

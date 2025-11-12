@@ -17,7 +17,11 @@ import {
 } from "../../api/endpoints/tareasApi";
 import { createTareaGlobal } from "../../api/endpoints/tareasApi";
 import { getTareaById } from "../../api/endpoints/tareasApi";
-import { createComentario } from "../../api/endpoints/comentariosApi";
+import {
+  createComentario,
+  patchComentario,
+  deleteComentario,
+} from "../../api/endpoints/comentariosApi";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -51,6 +55,12 @@ export default function ProjectDetail() {
   const [commentText, setCommentText] = useState("");
   const [postingComment, setPostingComment] = useState(false);
   const [commentError, setCommentError] = useState(null);
+  // inline edit comment state
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentText, setEditingCommentText] = useState("");
+  const [editingCommentLoading, setEditingCommentLoading] = useState(false);
+  const [editingCommentError, setEditingCommentError] = useState(null);
+  const [deletingCommentId, setDeletingCommentId] = useState(null);
   // edit task modal state
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editTaskId, setEditTaskId] = useState(null);
@@ -252,6 +262,67 @@ export default function ProjectDetail() {
     }
   };
 
+  const startEditComment = (c) => {
+    setEditingCommentId(c.id);
+    setEditingCommentText(c.texto || c.text || "");
+    setEditingCommentError(null);
+  };
+
+  const cancelEditComment = () => {
+    if (editingCommentLoading) return;
+    setEditingCommentId(null);
+    setEditingCommentText("");
+    setEditingCommentError(null);
+  };
+
+  const saveEditComment = async () => {
+    if (!editingCommentText || !editingCommentText.trim()) {
+      setEditingCommentError("El comentario no puede estar vacío");
+      return;
+    }
+    setEditingCommentLoading(true);
+    setEditingCommentError(null);
+    try {
+      await patchComentario(editingCommentId, { texto: editingCommentText });
+      // reload tarea to get canonical comentarios
+      const tareaRes = await getTareaById(taskDetail.id);
+      const fresh = tareaRes.data?.data || null;
+      setTaskDetail(fresh);
+      // clear edit state
+      setEditingCommentId(null);
+      setEditingCommentText("");
+    } catch (err) {
+      setEditingCommentError(
+        err?.response?.data?.message ||
+          err.message ||
+          "Error actualizando comentario"
+      );
+    } finally {
+      setEditingCommentLoading(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!confirm("¿Eliminar comentario?")) return;
+    setDeletingCommentId(commentId);
+    try {
+      await deleteComentario(commentId);
+      // reload tarea to get canonical comentarios
+      const tareaRes = await getTareaById(taskDetail.id);
+      const fresh = tareaRes.data?.data || null;
+      setTaskDetail(fresh);
+    } catch (err) {
+      // show a small inline error near comments area
+      setCommentError(
+        err?.response?.data?.message ||
+          err.message ||
+          "Error eliminando comentario"
+      );
+    } finally {
+      setDeletingCommentId(null);
+    }
+  };
+
   const openEditModal = async (t) => {
     // Fetch canonical tarea from API to ensure we have full fields (descripcion, etc.)
     setEditTaskId(t.id);
@@ -354,7 +425,6 @@ export default function ProjectDetail() {
       <main className="p-6">
         {loading && <div>Cargando...</div>}
         {error && <div className="text-red-600">{String(error)}</div>}
-
         {project && (
           <div>
             <div className="flex items-center justify-between mb-6">
@@ -765,23 +835,94 @@ export default function ProjectDetail() {
                             c.createdAtRaw ||
                             c.fecha ||
                             "";
+                          const isOwnComment =
+                            (c.usuario && c.usuario.id) === currentUserId ||
+                            c.usuario_id === currentUserId;
                           return (
                             <div
                               key={c.id}
                               className="p-2 bg-gray-50 dark:bg-gray-800 rounded"
                             >
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
-                                <span className="font-medium text-gray-800 dark:text-gray-100">
-                                  {author}
-                                </span>
-                                <span className="ml-2">•</span>
-                                <span className="ml-2">
-                                  {formatDate(created)}
-                                </span>
+                              <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-between gap-2">
+                                <div>
+                                  <span className="font-medium text-gray-800 dark:text-gray-100">
+                                    {author}
+                                  </span>
+                                  <span className="ml-2">•</span>
+                                  <span className="ml-2">
+                                    {formatDate(created)}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {isOwnComment &&
+                                    editingCommentId !== c.id && (
+                                      <>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            startEditComment(c);
+                                          }}
+                                          className="text-xs text-indigo-600"
+                                        >
+                                          Editar
+                                        </button>
+                                        <button
+                                          onClick={async (e) => {
+                                            e.stopPropagation();
+                                            if (deletingCommentId === c.id)
+                                              return;
+                                            await handleDeleteComment(c.id);
+                                          }}
+                                          className="text-xs text-red-600"
+                                          disabled={deletingCommentId === c.id}
+                                        >
+                                          {deletingCommentId === c.id
+                                            ? "Eliminando..."
+                                            : "Eliminar"}
+                                        </button>
+                                      </>
+                                    )}
+                                </div>
                               </div>
-                              <div className="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                                {c.texto || c.text || ""}
-                              </div>
+
+                              {editingCommentId === c.id ? (
+                                <div className="mt-2">
+                                  <textarea
+                                    value={editingCommentText}
+                                    onChange={(e) =>
+                                      setEditingCommentText(e.target.value)
+                                    }
+                                    className="mt-1 w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                  />
+                                  {editingCommentError && (
+                                    <div className="text-red-600 mt-1">
+                                      {editingCommentError}
+                                    </div>
+                                  )}
+                                  <div className="flex justify-end gap-2 mt-2">
+                                    <button
+                                      onClick={() => cancelEditComment()}
+                                      className="px-3 py-2 bg-gray-200 dark:bg-gray-700 rounded-md"
+                                      disabled={editingCommentLoading}
+                                    >
+                                      Cancelar
+                                    </button>
+                                    <button
+                                      onClick={() => void saveEditComment()}
+                                      className="px-3 py-2 bg-indigo-600 text-white rounded-md"
+                                      disabled={editingCommentLoading}
+                                    >
+                                      {editingCommentLoading
+                                        ? "Guardando..."
+                                        : "Guardar"}
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                  {c.texto || c.text || ""}
+                                </div>
+                              )}
                             </div>
                           );
                         })}

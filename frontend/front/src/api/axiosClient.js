@@ -4,7 +4,7 @@ import axios from "axios";
 // Si no está definida, usamos la URL local de la API de Laravel como fallback.
 const baseURL =
   import.meta.env.VITE_API_URL ||
-  import.meta.env.VITE_API_URL_SPRING ||
+  import.meta.env.VITE_API_URL_LARAVEL ||
   "http://127.0.0.1:8000/api";
 
 // Crear cliente axios común. Activamos withCredentials para que funcione Sanctum

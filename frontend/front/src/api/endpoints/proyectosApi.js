@@ -21,6 +21,10 @@ export const createProyecto = (data) =>
   axiosClient.post(API_ENDPOINT, toApiPayload(data));
 export const updateProyecto = (id, data) =>
   axiosClient.put(`${API_ENDPOINT}/${id}`, toApiPayload(data));
+// Some backends expect POST to the resource id for updates; provide helper
+// Prefer PATCH for partial updates
+export const patchUpdateProyecto = (id, data) =>
+  axiosClient.patch(`${API_ENDPOINT}/${id}`, toApiPayload(data));
 export const deleteProyecto = (id) =>
   axiosClient.delete(`${API_ENDPOINT}/${id}`);
 

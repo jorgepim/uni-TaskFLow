@@ -1,0 +1,166 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="sv.edu.catolica.taskflow"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="33"
+9        android:targetSdkVersion="35" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:5:5-67
+11-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:5:22-64
+12    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+12-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:6:5-79
+12-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:6:22-76
+13
+14    <permission
+14-->[androidx.core:core:1.13.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\dc5ee753c80ccfc16aa2b623a75ada7e\transformed\core-1.13.0\AndroidManifest.xml:22:5-24:47
+15        android:name="sv.edu.catolica.taskflow.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+15-->[androidx.core:core:1.13.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\dc5ee753c80ccfc16aa2b623a75ada7e\transformed\core-1.13.0\AndroidManifest.xml:23:9-81
+16        android:protectionLevel="signature" />
+16-->[androidx.core:core:1.13.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\dc5ee753c80ccfc16aa2b623a75ada7e\transformed\core-1.13.0\AndroidManifest.xml:24:9-44
+17
+18    <uses-permission android:name="sv.edu.catolica.taskflow.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+18-->[androidx.core:core:1.13.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\dc5ee753c80ccfc16aa2b623a75ada7e\transformed\core-1.13.0\AndroidManifest.xml:26:5-97
+18-->[androidx.core:core:1.13.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\dc5ee753c80ccfc16aa2b623a75ada7e\transformed\core-1.13.0\AndroidManifest.xml:26:22-94
+19
+20    <application
+20-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:8:5-45:19
+21        android:allowBackup="true"
+21-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:9:9-35
+22        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+22-->[androidx.core:core:1.13.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\dc5ee753c80ccfc16aa2b623a75ada7e\transformed\core-1.13.0\AndroidManifest.xml:28:18-86
+23        android:dataExtractionRules="@xml/data_extraction_rules"
+23-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:10:9-65
+24        android:debuggable="true"
+25        android:extractNativeLibs="false"
+26        android:fullBackupContent="@xml/backup_rules"
+26-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:11:9-54
+27        android:icon="@mipmap/ic_launcher"
+27-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:12:9-43
+28        android:label="@string/app_name"
+28-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:13:9-41
+29        android:roundIcon="@mipmap/ic_launcher_round"
+29-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:14:9-54
+30        android:supportsRtl="true"
+30-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:15:9-35
+31        android:testOnly="true"
+32        android:theme="@style/Theme.TaskFlow"
+32-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:16:9-46
+33        android:usesCleartextTraffic="true" >
+33-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:17:9-44
+34        <activity
+34-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:19:9-27:20
+35            android:name="sv.edu.catolica.taskflow.LoginActivity"
+35-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:20:13-42
+36            android:exported="true" >
+36-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:21:13-36
+37            <intent-filter>
+37-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:22:13-26:29
+38                <action android:name="android.intent.action.MAIN" />
+38-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:23:17-69
+38-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:23:25-66
+39
+40                <category android:name="android.intent.category.LAUNCHER" />
+40-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:25:17-77
+40-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:25:27-74
+41            </intent-filter>
+42        </activity>
+43        <activity android:name="sv.edu.catolica.taskflow.RegisterActivity" />
+43-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:29:9-54
+43-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:29:19-51
+44        <activity android:name="sv.edu.catolica.taskflow.MainActivity" />
+44-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:30:9-50
+44-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:30:19-47
+45        <activity android:name="sv.edu.catolica.taskflow.StatsActivity" />
+45-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:31:9-51
+45-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:31:19-48
+46        <activity android:name="sv.edu.catolica.taskflow.ProfileActivity" />
+46-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:32:9-53
+46-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:32:19-50
+47        <activity
+47-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:35:9-37:58
+48            android:name="sv.edu.catolica.taskflow.CrearTareaActivity"
+48-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:36:13-47
+49            android:parentActivityName="sv.edu.catolica.taskflow.MainActivity" />
+49-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:37:13-55
+50        <activity android:name="sv.edu.catolica.taskflow.EditarTareaActivity" />
+50-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:39:9-57
+50-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:39:19-54
+51        <activity android:name="sv.edu.catolica.taskflow.MisTareasActivity" />
+51-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:40:9-55
+51-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:40:19-52
+52        <activity android:name="sv.edu.catolica.taskflow.CrearProyectoActivity" />
+52-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:42:9-59
+52-->C:\Users\Usuario\OneDrive\Escritorio\TaskFlowMovil\mobile\Android\TaskFlow\app\src\main\AndroidManifest.xml:42:19-56
+53
+54        <provider
+54-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\48abad639b3075e5de2d6675e6f48305\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+55            android:name="androidx.startup.InitializationProvider"
+55-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\48abad639b3075e5de2d6675e6f48305\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+56            android:authorities="sv.edu.catolica.taskflow.androidx-startup"
+56-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\48abad639b3075e5de2d6675e6f48305\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+57            android:exported="false" >
+57-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\48abad639b3075e5de2d6675e6f48305\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+58            <meta-data
+58-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\48abad639b3075e5de2d6675e6f48305\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+59                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+59-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\48abad639b3075e5de2d6675e6f48305\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+60                android:value="androidx.startup" />
+60-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\48abad639b3075e5de2d6675e6f48305\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+61            <meta-data
+61-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\4e2b2fe6cf5eceafe91b42ec70c644b4\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:29:13-31:52
+62                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+62-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\4e2b2fe6cf5eceafe91b42ec70c644b4\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:30:17-78
+63                android:value="androidx.startup" />
+63-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\4e2b2fe6cf5eceafe91b42ec70c644b4\transformed\lifecycle-process-2.6.2\AndroidManifest.xml:31:17-49
+64            <meta-data
+64-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:29:13-31:52
+65                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+65-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:30:17-85
+66                android:value="androidx.startup" />
+66-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:31:17-49
+67        </provider>
+68
+69        <receiver
+69-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:34:9-52:20
+70            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+70-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:35:13-76
+71            android:directBootAware="false"
+71-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:36:13-44
+72            android:enabled="true"
+72-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:37:13-35
+73            android:exported="true"
+73-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:38:13-36
+74            android:permission="android.permission.DUMP" >
+74-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:39:13-57
+75            <intent-filter>
+75-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:40:13-42:29
+76                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+76-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:17-91
+76-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:41:25-88
+77            </intent-filter>
+78            <intent-filter>
+78-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:43:13-45:29
+79                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+79-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:17-85
+79-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:44:25-82
+80            </intent-filter>
+81            <intent-filter>
+81-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:46:13-48:29
+82                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+82-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:17-88
+82-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:47:25-85
+83            </intent-filter>
+84            <intent-filter>
+84-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:49:13-51:29
+85                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+85-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:17-95
+85-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Usuario\.gradle\caches\8.11.1\transforms\2a92bb67282f40d93689712741c242f6\transformed\profileinstaller-1.4.0\AndroidManifest.xml:50:25-92
+86            </intent-filter>
+87        </receiver>
+88    </application>
+89
+90</manifest>

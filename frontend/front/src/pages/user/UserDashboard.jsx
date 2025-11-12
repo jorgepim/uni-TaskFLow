@@ -7,6 +7,7 @@ import {
   createProyecto,
 } from "../../api/endpoints/proyectosApi";
 import Modal from "../../components/ui/Modal";
+import { patchUpdateProyecto } from "../../api/endpoints/proyectosApi";
 
 export default function UserDashboard() {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ export default function UserDashboard() {
   })();
 
   const userName = user?.nombre || user?.name || "Usuario";
+  const currentUserId = user?.id;
 
   const links = [
     { to: "/user/dashboard", label: "Proyectos" },
@@ -145,7 +147,6 @@ export default function UserDashboard() {
             + Crear proyecto
           </button>
         </div>
-        {/* filtros */}
         <form
           className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-3 items-end"
           onSubmit={handleFilter}
@@ -322,15 +323,179 @@ export default function UserDashboard() {
                       {p.descripcion}
                     </p>
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    {p.fecha_creacion}
+                  <div className="flex items-center gap-2">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {p.fecha_creacion}
+                    </div>
+                    {(p.creado_por?.id === currentUserId ||
+                      p.creado_por === currentUserId ||
+                      p.creado_por_id === currentUserId) && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // dispatch a custom event the modal listens to
+                          try {
+                            window.dispatchEvent(
+                              new CustomEvent("open-edit-project", {
+                                detail: { id: p.id },
+                                bubbles: true,
+                                cancelable: true,
+                              })
+                            );
+                          } catch (err) {
+                            // fallback: no-op
+                            void err;
+                          }
+                        }}
+                        title="Editar proyecto"
+                        className="text-sm text-indigo-600 hover:text-indigo-800"
+                      >
+                        Editar
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
             ))}
           </div>
         )}
+
+        {/* Edit project modal state and UI */}
+        <EditProjectModal
+          proyectos={proyectos}
+          onSave={async () => {
+            // reload proyectos after edit
+            setLoading(true);
+            try {
+              const res = await getMyProyectos();
+              setProyectos(res.data?.data || []);
+            } catch (err) {
+              void err;
+            } finally {
+              setLoading(false);
+            }
+          }}
+        />
       </main>
     </div>
+  );
+}
+
+function EditProjectModal({ proyectos, onSave }) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [editingProject, setEditingProject] = React.useState(null);
+  const [titulo, setTitulo] = React.useState("");
+  const [descripcion, setDescripcion] = React.useState("");
+  const [saving, setSaving] = React.useState(false);
+  const [error, setError] = React.useState(null);
+
+  // listen for custom event `open-edit-project` dispatched from project cards
+  React.useEffect(() => {
+    function onOpen(e) {
+      try {
+        const id = e?.detail?.id;
+        if (!id) return;
+        const proj = proyectos.find((x) => String(x.id) === String(id));
+        if (!proj) return;
+        setEditingProject(proj);
+        setTitulo(proj.titulo || "");
+        setDescripcion(proj.descripcion || "");
+        setError(null);
+        setIsOpen(true);
+      } catch {
+        // ignore
+      }
+    }
+    window.addEventListener("open-edit-project", onOpen);
+    return () => window.removeEventListener("open-edit-project", onOpen);
+  }, [proyectos]);
+
+  const handleSave = async () => {
+    if (!editingProject) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await patchUpdateProyecto(editingProject.id, {
+        titulo: titulo,
+        descripcion: descripcion,
+      });
+      setIsOpen(false);
+      setEditingProject(null);
+      if (onSave) await onSave();
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+          err.message ||
+          "Error guardando proyecto"
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        if (!saving) {
+          setIsOpen(false);
+          setEditingProject(null);
+          setError(null);
+        }
+      }}
+      title={
+        editingProject
+          ? `Editar proyecto: ${editingProject.titulo}`
+          : "Editar proyecto"
+      }
+    >
+      {editingProject ? (
+        <div className="space-y-3">
+          {error && <div className="text-red-600">{String(error)}</div>}
+          <div>
+            <label className="block text-sm text-gray-600 dark:text-gray-300">
+              Título
+            </label>
+            <input
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              className="mt-1 w-full px-3 py-2 rounded-md border"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 dark:text-gray-300">
+              Descripción
+            </label>
+            <textarea
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+              className="mt-1 w-full px-3 py-2 rounded-md border"
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                setEditingProject(null);
+                setError(null);
+              }}
+              className="px-3 py-2 bg-gray-200 rounded-md"
+              disabled={saving}
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-3 py-2 bg-indigo-600 text-white rounded-md"
+              disabled={saving}
+            >
+              {saving ? "Guardando..." : "Guardar"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div>Cargando...</div>
+      )}
+    </Modal>
   );
 }

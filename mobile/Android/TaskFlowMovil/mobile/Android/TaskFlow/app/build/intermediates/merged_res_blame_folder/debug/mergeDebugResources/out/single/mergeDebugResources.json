@@ -1,0 +1,162 @@
+[
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_item_tarea.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/item_tarea.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_task.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_task.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_activity_mis_tareas.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/activity_mis_tareas.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_my_tasks.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_my_tasks.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_title.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_title.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_add.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_add.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-anydpi_ic_launcher_round.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-anydpi/ic_launcher_round.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_arrow_down.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_arrow_down.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_item_proyecto_stats.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/item_proyecto_stats.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-anydpi_ic_launcher.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-anydpi/ic_launcher.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/xml_backup_rules.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_project_folder.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_project_folder.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_activity_stats.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/activity_stats.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_description.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_description.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_item_estado_stat.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/item_estado_stat.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_person.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_person.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_item_proyecto_header.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/item_proyecto_header.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_activity_login.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/activity_login.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/xml_data_extraction_rules.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_activity_crear_tarea.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/activity_crear_tarea.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/menu_navigation_menu.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/menu/navigation_menu.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_calendar.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_calendar.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_activity_main.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/activity_main.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_activity_register.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/activity_register.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_activity_profile.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/activity_profile.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_status_background.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/status_background.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_launcher_background.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_activity_editar_tarea.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/activity_editar_tarea.xml"
+    },
+    {
+        "merged": "sv.edu.catolica.taskflow.app-debug-32:/layout_activity_crear_proyecto.xml.flat",
+        "source": "sv.edu.catolica.taskflow.app-main-34:/layout/activity_crear_proyecto.xml"
+    }
+]

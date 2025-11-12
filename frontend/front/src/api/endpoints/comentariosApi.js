@@ -20,6 +20,8 @@ export const createComentario = (data) =>
   axiosClient.post(API_ENDPOINT, toApiPayload(data));
 export const updateComentario = (id, data) =>
   axiosClient.put(`${API_ENDPOINT}/${id}`, toApiPayload(data));
+export const patchComentario = (id, data) =>
+  axiosClient.patch(`${API_ENDPOINT}/${id}`, toApiPayload(data));
 export const deleteComentario = (id) =>
   axiosClient.delete(`${API_ENDPOINT}/${id}`);
 
@@ -28,5 +30,6 @@ export default {
   getComentarioById,
   createComentario,
   updateComentario,
+  patchComentario,
   deleteComentario,
 };

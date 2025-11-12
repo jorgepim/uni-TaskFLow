@@ -496,4 +496,101 @@ public class ProyectoController {
         return ResponseEntity.ok(wrap);
     }
 
+    // PATCH endpoint: actualizar proyecto (solo creador)
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseWrapper<Map<String, Object>>> updateProject(HttpServletRequest request,
+                                                                                @PathVariable("id") Long id,
+                                                                                @RequestBody com.doublevistudio.api.dto.ProyectoUpdateRequest req) {
+        Optional<Proyecto> opt = proyectoRepository.findById(id);
+        if (opt.isEmpty()) {
+            ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+            w.setStatus("error");
+            w.setMessage("Proyecto no encontrado");
+            w.setTimestamp(Instant.now());
+            w.setData(null);
+            return ResponseEntity.status(404).body(w);
+        }
+        Proyecto p = opt.get();
+
+        Object attr = request.getAttribute("currentUserId");
+        if (attr == null) {
+            ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+            w.setStatus("error");
+            w.setMessage("No autorizado");
+            w.setTimestamp(Instant.now());
+            w.setData(null);
+            return ResponseEntity.status(401).body(w);
+        }
+        Long userId = Long.valueOf(String.valueOf(attr));
+
+        // solo el creador puede actualizar
+        if (p.getCreadoPor() == null || !p.getCreadoPor().equals(userId)) {
+            ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+            w.setStatus("error");
+            w.setMessage("Solo el creador del proyecto puede actualizarlo");
+            w.setTimestamp(Instant.now());
+            w.setData(null);
+            return ResponseEntity.status(403).body(w);
+        }
+
+        boolean changed = false;
+        if (req.getTitulo() != null && !req.getTitulo().trim().isEmpty()) {
+            p.setTitulo(req.getTitulo().trim());
+            changed = true;
+        }
+        if (req.getDescripcion() != null) {
+            p.setDescripcion(req.getDescripcion());
+            changed = true;
+        }
+        if (req.getFecha_creacion() != null && !req.getFecha_creacion().trim().isEmpty()) {
+            // intentar parsear yyyy-MM-dd
+            try {
+                java.time.LocalDate d = java.time.LocalDate.parse(req.getFecha_creacion());
+                // mantener fecha_creacion como LocalDateTime con tiempo 00:00
+                p.setFechaCreacion(d.atStartOfDay());
+                changed = true;
+            } catch (Exception ex) {
+                // ignorar formato inválido y devolver bad request
+                ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+                w.setStatus("error");
+                w.setMessage("fecha_creacion inválida, se espera yyyy-MM-dd");
+                w.setTimestamp(Instant.now());
+                w.setData(null);
+                return ResponseEntity.badRequest().body(w);
+            }
+        }
+
+        if (changed) {
+            proyectoRepository.save(p);
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", p.getId());
+        data.put("titulo", p.getTitulo());
+        data.put("descripcion", p.getDescripcion());
+        data.put("fecha_creacion", p.getFechaCreacion() != null ? p.getFechaCreacion().format(OUT_FMT) : null);
+        data.put("creado_por", p.getCreadoPor());
+        // rol_proyecto para el usuario actual
+        String rolProyecto = null;
+        List<UsuarioProyecto> ups = usuarioProyectoRepository.findByIdProyectoId(id);
+        Object attr2 = request.getAttribute("currentUserId");
+        if (attr2 != null) {
+            Long currentUserId = Long.valueOf(String.valueOf(attr2));
+            for (UsuarioProyecto up : ups) {
+                if (up.getUsuario() != null && up.getUsuario().getId().equals(currentUserId)) {
+                    rolProyecto = up.getRolProyecto() != null ? up.getRolProyecto().name() : null;
+                    break;
+                }
+            }
+        }
+        data.put("rol_proyecto", rolProyecto);
+
+        ResponseWrapper<Map<String, Object>> wrap = new ResponseWrapper<>();
+        wrap.setStatus("success");
+        wrap.setMessage("Proyecto actualizado");
+        wrap.setTimestamp(Instant.now());
+        wrap.setData(data);
+        return ResponseEntity.ok(wrap);
+    }
+
 }

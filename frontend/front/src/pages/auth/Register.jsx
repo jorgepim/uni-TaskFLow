@@ -8,7 +8,6 @@ export default function Register() {
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [activo, setActivo] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { show, hide } = useContext(LoadingContext);
@@ -34,7 +33,7 @@ export default function Register() {
     setLoading(true);
     show();
     try {
-      const payload = { nombre, email, password, activo };
+      const payload = { nombre, email, password, activo: true };
       const res = await registerApi(payload);
       toast.success(res?.data?.message || "Usuario registrado");
       navigate("/user/dashboard", { replace: true });
@@ -127,22 +126,6 @@ export default function Register() {
             {errors.password && (
               <p className="mt-1 text-sm text-red-600">{errors.password}</p>
             )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <input
-              id="activo"
-              type="checkbox"
-              checked={activo}
-              onChange={(e) => setActivo(e.target.checked)}
-              className="h-4 w-4 text-blue-600"
-            />
-            <label
-              htmlFor="activo"
-              className="text-sm text-gray-700 dark:text-gray-200"
-            >
-              Activo
-            </label>
           </div>
 
           {errors.form && (

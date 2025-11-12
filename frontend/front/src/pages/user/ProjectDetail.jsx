@@ -554,6 +554,9 @@ export default function ProjectDetail() {
                                 value={t.estado}
                                 onChange={(e) => {
                                   const newEstado = e.target.value;
+                                  // if tarea is COMPLETADA, only CREADOR can change it
+                                  if (t.estado === "COMPLETADA" && !isCreador)
+                                    return;
                                   const canEdit =
                                     isCreador ||
                                     (isColaborador &&
@@ -563,11 +566,14 @@ export default function ProjectDetail() {
                                 }}
                                 className="px-2 py-1 rounded-md border bg-white dark:bg-gray-800 text-sm"
                                 disabled={
-                                  !(
-                                    isCreador ||
-                                    (isColaborador &&
-                                      t.asignado?.id === currentUserId)
-                                  )
+                                  // disabled if tarea ya está completada y el usuario no es creador
+                                  t.estado === "COMPLETADA"
+                                    ? !isCreador
+                                    : !(
+                                        isCreador ||
+                                        (isColaborador &&
+                                          t.asignado?.id === currentUserId)
+                                      )
                                 }
                               >
                                 {estados.map((s) => (

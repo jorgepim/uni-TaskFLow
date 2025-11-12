@@ -17,12 +17,12 @@ import java.util.concurrent.TimeUnit;
 
 public class ApiClient {
     // Configuraciones de URL para diferentes escenarios
-    private static final String BASE_URL_WIFI = "http://192.168.18.31:8000/api";
+    private static final String BASE_URL_WIFI = "http://192.168.1.25:8080/api";
     private static final String BASE_URL_EMULATOR = "http://10.0.2.2:8000/api";
     private static final String BASE_URL_LOCALHOST = "http://127.0.0.1:8000/api";
 
     // URL activa - cambiar según tu configuración
-    private static final String BASE_URL = BASE_URL_EMULATOR;
+    private static final String BASE_URL = BASE_URL_WIFI;
 
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 

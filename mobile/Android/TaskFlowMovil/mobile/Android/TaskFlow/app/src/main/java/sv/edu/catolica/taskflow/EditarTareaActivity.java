@@ -104,7 +104,7 @@ public class EditarTareaActivity extends AppCompatActivity {
 
         // Listeners
         btnGuardar.setOnClickListener(v -> actualizarTarea());
-        etFecha.setOnClickListener(v -> setupDatePicker());
+        etFecha.setOnClickListener(v -> setupDatePicker()); // This is the correct place to set the listener
 
         // Listener para cargar usuarios cuando se selecciona un proyecto
         acProyecto.setOnItemClickListener((parent, view, position, id) -> {
@@ -118,16 +118,15 @@ public class EditarTareaActivity extends AppCompatActivity {
     }
 
     private void setupDatePicker() {
-        etFecha.setOnClickListener(v -> {
-            final Calendar c = Calendar.getInstance();
-            DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                    (view, year, month, day) -> {
-                        fechaSeleccionada = String.format(Locale.US, "%d-%02d-%02d", year, (month + 1), day);
-                        String fechaUsuario = String.format(Locale.US, "%02d/%02d/%d", day, (month + 1), year);
-                        etFecha.setText(fechaUsuario);
-                    }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-            datePickerDialog.show();
-        });
+        // Removed the redundant etFecha.setOnClickListener from here.
+        final Calendar c = Calendar.getInstance();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, year, month, day) -> {
+                    fechaSeleccionada = String.format(Locale.US, "%d-%02d-%02d", year, (month + 1), day);
+                    String fechaUsuario = String.format(Locale.US, "%02d/%02d/%d", day, (month + 1), year);
+                    etFecha.setText(fechaUsuario);
+                }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
     }
 
     // --- Lógica de Carga de Datos ---
@@ -137,22 +136,26 @@ public class EditarTareaActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Tarea result) {
 
-                // --- LÓGICA DE VALIDACIÓN (REGLA 1) ---
-                boolean isAsignadoAMi = (result.getAsignado() != null && result.getAsignado().getId() == userId);
-                boolean isCreadoPorMi = (result.getCreado_por() != null && result.getCreado_por().getId() == userId);
+                // Mover TODA la lógica al hilo principal
+                new Handler(Looper.getMainLooper()).post(() -> {
 
-                if (isAsignadoAMi && !isCreadoPorMi) {
-                    new Handler(Looper.getMainLooper()).post(() -> {
+                    // --- LÓGICA DE VALIDACIÓN (REGLA 1) ---
+                    boolean isAsignadoAMi = (result.getAsignado() != null && result.getAsignado().getId() == userId);
+                    // NOTA: Esta línea puede fallar por el Error 2 (ver abajo)
+                    boolean isCreadoPorMi = (result.getCreado_por() != null && result.getCreado_por().getId() == userId);
+
+                    if (isAsignadoAMi && !isCreadoPorMi) {
                         Toast.makeText(EditarTareaActivity.this, "No puedes editar una tarea que te fue asignada por otra persona.", Toast.LENGTH_LONG).show();
                         finish();
-                    });
-                    return;
-                }
-                // --- FIN DE VALIDACIÓN ---
+                        return; // Sale del Handler
+                    }
+                    // --- FIN DE VALIDACIÓN ---
 
-                tareaActual = result;
-                tryPopulateForm(); // Intentar rellenar
+                    tareaActual = result;
+                    tryPopulateForm(); // Ahora esto es seguro
+                });
             }
+
             @Override
             public void onError(String error) {
                 new Handler(Looper.getMainLooper()).post(() -> {

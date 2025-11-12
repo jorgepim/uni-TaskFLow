@@ -11,8 +11,11 @@ use App\Models\Usuario;
 use App\Services\UsuarioService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Models\Tarea;
 use App\Http\Resources\TareaResource;
+use App\Models\Rol;
+use App\Models\Tarea;
+use Illuminate\Support\Facades\DB;
+use App\Models\Proyecto;
 
 class UsuarioController extends Controller
 {
@@ -125,6 +128,18 @@ class UsuarioController extends Controller
             return $this->errorResponse('Rol inválido', 422);
         }
 
+        // Si piden cambiar a ADMIN, aplicar las mismas reglas que en adminUpdate:
+        // - El usuario no debe tener tareas asignadas con estado distinto de COMPLETADA
+        // - El usuario no debe ser CREADOR en la tabla pivot usuario_proyecto
+        if ($rolNombre === 'ADMIN') {
+            $hasOpenTasks = $usuario->tareasAsignadas()->where('estado', '!=', 'COMPLETADA')->exists();
+            $isCreador = $usuario->proyectos()->wherePivot('rol_proyecto', 'CREADOR')->exists();
+
+            if ($hasOpenTasks || $isCreador) {
+                return $this->errorResponse('No se puede asignar rol ADMIN: el usuario tiene tareas no completadas o es creador de proyectos', 422);
+            }
+        }
+
         // Reemplazar roles del usuario por el rol indicado
         $usuario->roles()->sync([$rol->id]);
 
@@ -165,25 +180,77 @@ class UsuarioController extends Controller
             return $this->errorResponse('No autorizado', 403);
         }
 
-        $data = $request->validated();
+        // Usamos el body original para decidir sobre el cambio de rol y
+        // aplicar cambios parciales como en el ejemplo de Spring Boot.
+        $body = $request->all();
 
-        // Si password viene vacío o nulo, no sobreescribir
-        if (array_key_exists('password', $data) && empty($data['password'])) {
-            unset($data['password']);
+        // Aplicar cambios parciales (nombre, email, password, activo) manualmente
+        if (array_key_exists('nombre', $body)) {
+            $usuario->nombre = $body['nombre'] ?? $usuario->nombre;
         }
 
-        // Actualizar campos básicos
-        $usuario = $this->service->update($usuario, $data);
+        if (array_key_exists('email', $body)) {
+            $newEmail = $body['email'] ? strtolower($body['email']) : null;
+            if ($newEmail) {
+                $existing = \App\Models\Usuario::where('email', $newEmail)->where('id', '!=', $usuario->id)->first();
+                if ($existing) {
+                    return $this->errorResponse('Email ya en uso', 422);
+                }
+                $usuario->email = $newEmail;
+            }
+        }
 
-        // Si se proporcionó 'rol', sincronizar roles (reemplaza roles existentes)
-        if (array_key_exists('rol', $data) && $data['rol']) {
-            $rol = \App\Models\Rol::where('nombre', $data['rol'])->first();
-            if ($rol) {
+        if (array_key_exists('password', $body) && $body['password'] !== null) {
+            $usuario->password = $body['password']; // mutator en Usuario hará el hash
+        }
+
+        if (array_key_exists('activo', $body)) {
+            $val = $body['activo'];
+            if (is_numeric($val)) {
+                $usuario->activo = intval($val) !== 0;
+            } else {
+                $usuario->activo = filter_var($val, FILTER_VALIDATE_BOOLEAN);
+            }
+        }
+
+        // Manejar rol según el valor enviado originalmente en el body
+        $roleChangeFailed = false;
+        if (array_key_exists('rol', $body) && $body['rol'] !== null) {
+            $roleName = strtoupper((string) ($body['rol'] ?? ''));
+            // Buscar o crear rol como hace el ejemplo en Spring
+            $rol = Rol::where('nombre', $roleName)->first();
+            if (! $rol) {
+                $rol = Rol::create(['nombre' => $roleName]);
+            }
+
+            if ($roleName === 'ADMIN') {
+                $hasNonCompleted = Tarea::where('asignado_a', $usuario->id)
+                    ->where('estado', '!=', 'COMPLETADA')
+                    ->exists();
+
+                $isCreatorOfProject = Proyecto::where('creado_por', $usuario->id)->exists();
+
+                if ($hasNonCompleted || $isCreatorOfProject) {
+                    $roleChangeFailed = true;
+                } else {
+                    // sincronizar rol: reemplazar roles existentes
+                    $usuario->roles()->sync([$rol->id]);
+                }
+            } else {
+                // roles distintos de ADMIN: sincronizar directamente
                 $usuario->roles()->sync([$rol->id]);
             }
         }
 
+        // Guardar usuario con los cambios aplicados
+        $usuario->save();
+
         $usuario->load('roles');
+
+        if ($roleChangeFailed) {
+            return $this->successResponse('Usuario actualizado por ADMIN, pero no se pudo cambiar el rol a ADMIN porque el usuario tiene tareas no completadas o es creador de proyectos', new UsuarioResource($usuario));
+        }
+
         return $this->successResponse('Usuario actualizado por ADMIN', new UsuarioResource($usuario));
     }
 

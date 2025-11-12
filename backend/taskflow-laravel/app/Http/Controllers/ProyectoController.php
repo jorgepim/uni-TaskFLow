@@ -192,7 +192,7 @@ class ProyectoController extends Controller
     public function usuariosAsignados(Request $request, Proyecto $proyecto)
     {
         // Base query: usuarios relacionados (incluye pivot)
-        $query = $proyecto->usuarios()->with('roles')->where('activo', 1);
+        $query = $proyecto->usuarios()->with('roles');
 
         // Filtrado opcional por nombre (LIKE)
         if ($request->filled('nombre')) {

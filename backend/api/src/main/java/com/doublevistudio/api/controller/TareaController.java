@@ -6,7 +6,6 @@ import com.doublevistudio.api.model.Tarea;
 import com.doublevistudio.api.model.Usuario;
 import com.doublevistudio.api.repository.*;
 import com.doublevistudio.api.dto.CambioEstadoRequest;
-import com.doublevistudio.api.dto.UpdateTareaRequest;
 import com.doublevistudio.api.dto.TareaCreateRequest;
 import com.doublevistudio.api.model.Proyecto;
 import com.doublevistudio.api.model.enums.TaskEstado;
@@ -45,6 +44,9 @@ public class TareaController {
 
     @Autowired
     private ProyectoRepository proyectoRepository;
+
+    @Autowired
+    private UsuarioRolRepository usuarioRolRepository; // <--- nueva inyección
 
     private static final DateTimeFormatter OUT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -206,7 +208,7 @@ public class TareaController {
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseWrapper<Map<String, Object>>> updateTarea(HttpServletRequest request, @PathVariable("id") Long id, @RequestBody UpdateTareaRequest req) {
+    public ResponseEntity<ResponseWrapper<Map<String, Object>>> updateTarea(HttpServletRequest request, @PathVariable("id") Long id, @RequestBody Map<String, Object> body) {
         Optional<Tarea> opt = tareaRepository.findById(id);
         if (opt.isEmpty()) {
             ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
@@ -252,41 +254,93 @@ public class TareaController {
         }
 
         // aplicar cambios parciales
-        if (req.getTitulo() != null) t.setTitulo(req.getTitulo());
-        if (req.getDescripcion() != null) t.setDescripcion(req.getDescripcion());
-        if (req.getFecha_vencimiento() != null) {
-            try {
-                LocalDate fecha = LocalDate.parse(req.getFecha_vencimiento());
-                t.setFechaVencimiento(fecha);
-            } catch (Exception ex) {
-                ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
-                w.setStatus("error");
-                w.setMessage("fecha_vencimiento inválida, usar YYYY-MM-DD");
-                w.setTimestamp(Instant.now());
-                w.setData(null);
-                return ResponseEntity.badRequest().body(w);
+        if (body.containsKey("titulo")) {
+            Object v = body.get("titulo");
+            if (v != null) t.setTitulo(String.valueOf(v));
+        }
+        if (body.containsKey("descripcion")) {
+            Object v = body.get("descripcion");
+            if (v != null) t.setDescripcion(String.valueOf(v));
+        }
+        if (body.containsKey("fecha_vencimiento")) {
+            Object v = body.get("fecha_vencimiento");
+            if (v == null) {
+                t.setFechaVencimiento(null);
+            } else {
+                try {
+                    LocalDate fecha = LocalDate.parse(String.valueOf(v));
+                    t.setFechaVencimiento(fecha);
+                } catch (Exception ex) {
+                    ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+                    w.setStatus("error");
+                    w.setMessage("fecha_vencimiento inválida, usar YYYY-MM-DD");
+                    w.setTimestamp(Instant.now());
+                    w.setData(null);
+                    return ResponseEntity.badRequest().body(w);
+                }
             }
         }
-        if (req.getAsignado_a() != null) {
-            Optional<Usuario> uOpt = usuarioRepository.findById(req.getAsignado_a());
-            if (uOpt.isEmpty()) {
-                ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
-                w.setStatus("error");
-                w.setMessage("Usuario asignado no encontrado");
-                w.setTimestamp(Instant.now());
-                w.setData(null);
-                return ResponseEntity.status(404).body(w);
+
+        // manejo especial para asignado_a: si la clave está presente -> puede asignar, desasignar o validar
+        if (body.containsKey("asignado_a")) {
+            Object val = body.get("asignado_a");
+            if (val == null) {
+                // desasignar explícitamente
+                t.setAsignadoA(null);
+            } else {
+                Long nuevoAsignadoId;
+                try {
+                    // puede venir como Integer o Long o String
+                    if (val instanceof Number) nuevoAsignadoId = ((Number) val).longValue();
+                    else nuevoAsignadoId = Long.valueOf(String.valueOf(val));
+                } catch (Exception ex) {
+                    ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+                    w.setStatus("error");
+                    w.setMessage("identificador de asignado inválido");
+                    w.setTimestamp(Instant.now());
+                    w.setData(null);
+                    return ResponseEntity.badRequest().body(w);
+                }
+
+                Optional<Usuario> uOpt = usuarioRepository.findById(nuevoAsignadoId);
+                if (uOpt.isEmpty()) {
+                    ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+                    w.setStatus("error");
+                    w.setMessage("Usuario asignado no encontrado");
+                    w.setTimestamp(Instant.now());
+                    w.setData(null);
+                    return ResponseEntity.status(404).body(w);
+                }
+                Usuario u = uOpt.get();
+                if (!Boolean.TRUE.equals(u.getActivo())) {
+                    ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+                    w.setStatus("error");
+                    w.setMessage("Usuario no activo");
+                    w.setTimestamp(Instant.now());
+                    w.setData(null);
+                    return ResponseEntity.badRequest().body(w);
+                }
+                // verificar que el usuario no tenga rol ADMIN
+                List<com.doublevistudio.api.model.UsuarioRol> userRoles = usuarioRolRepository.findByIdUsuarioId(u.getId());
+                boolean isAdmin = false;
+                if (userRoles != null) {
+                    for (com.doublevistudio.api.model.UsuarioRol ur : userRoles) {
+                        if (ur.getRol() != null && "ADMIN".equalsIgnoreCase(ur.getRol().getNombre())) {
+                            isAdmin = true;
+                            break;
+                        }
+                    }
+                }
+                if (isAdmin) {
+                    ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+                    w.setStatus("error");
+                    w.setMessage("No se puede asignar un usuario con rol ADMIN");
+                    w.setTimestamp(Instant.now());
+                    w.setData(null);
+                    return ResponseEntity.badRequest().body(w);
+                }
+                t.setAsignadoA(u);
             }
-            Usuario u = uOpt.get();
-            if (!Boolean.TRUE.equals(u.getActivo())) {
-                ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
-                w.setStatus("error");
-                w.setMessage("Usuario no activo");
-                w.setTimestamp(Instant.now());
-                w.setData(null);
-                return ResponseEntity.badRequest().body(w);
-            }
-            t.setAsignadoA(u);
         }
 
         tareaRepository.save(t);
@@ -351,6 +405,24 @@ public class TareaController {
                 ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
                 w.setStatus("error");
                 w.setMessage("Usuario asignado no activo");
+                w.setTimestamp(Instant.now());
+                w.setData(null);
+                return ResponseEntity.badRequest().body(w);
+            }
+            // verificar que el usuario no tenga rol ADMIN
+            List<com.doublevistudio.api.model.UsuarioRol> asignRoles = usuarioRolRepository.findByIdUsuarioId(asignado.getId());
+            boolean asignIsAdmin = false;
+            if (asignRoles != null) {
+                for (com.doublevistudio.api.model.UsuarioRol ur : asignRoles) {
+                    if (ur.getRol() != null && "ADMIN".equalsIgnoreCase(ur.getRol().getNombre())) {
+                        asignIsAdmin = true; break;
+                    }
+                }
+            }
+            if (asignIsAdmin) {
+                ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+                w.setStatus("error");
+                w.setMessage("No se puede asignar un usuario con rol ADMIN");
                 w.setTimestamp(Instant.now());
                 w.setData(null);
                 return ResponseEntity.badRequest().body(w);

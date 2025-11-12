@@ -56,6 +56,9 @@ public class UsuarioController {
     @Autowired
     private RolRepository rolRepository;
 
+    @Autowired
+    private com.doublevistudio.api.repository.ProyectoRepository proyectoRepository;
+
     private static final DateTimeFormatter OUT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @GetMapping(value = "/me/proyectos", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -518,27 +521,59 @@ public class UsuarioController {
         }
 
         // manejar rol: reemplazamos roles existentes por el rol indicado
+        boolean roleChangeFailed = false;
         if (body.containsKey("rol")) {
             Object v = body.get("rol");
             if (v != null) {
                 String roleName = String.valueOf(v).toUpperCase();
+                // obtener o crear rol solicitado
                 Rol role = rolRepository.findByNombre(roleName).orElseGet(() -> {
                     Rol r = new Rol(); r.setNombre(roleName); return rolRepository.save(r);
                 });
 
-                // eliminar roles actuales del usuario
-                List<com.doublevistudio.api.model.UsuarioRol> currentRoles = usuarioRolRepository.findByIdUsuarioId(user.getId());
-                if (currentRoles != null && !currentRoles.isEmpty()) {
-                    usuarioRolRepository.deleteAll(currentRoles);
-                }
+                // Si se solicita cambiar a ADMIN, verificar restricciones
+                if ("ADMIN".equalsIgnoreCase(roleName)) {
+                    // 1) verificar si tiene tareas asignadas con estado distinto a COMPLETADA
+                    boolean hasNonCompletedTasks = tareaRepository.findAll().stream().anyMatch(t ->
+                            t.getAsignadoA() != null && t.getAsignadoA().getId() != null && t.getAsignadoA().getId().equals(user.getId())
+                                    && (t.getEstado() == null || !"COMPLETADA".equalsIgnoreCase(t.getEstado().name()))
+                    );
+                    // 2) verificar si es creador de algún proyecto
+                    boolean isCreatorOfProject = proyectoRepository.findAll().stream().anyMatch(p ->
+                            p.getCreadoPor() != null && p.getCreadoPor().equals(user.getId())
+                    );
 
-                // asignar nuevo rol
-                com.doublevistudio.api.model.UsuarioRol newUr = com.doublevistudio.api.model.UsuarioRol.builder()
-                        .id(new UsuarioRolId(user.getId(), role.getId()))
-                        .usuario(user)
-                        .rol(role)
-                        .build();
-                usuarioRolRepository.save(newUr);
+                    if (hasNonCompletedTasks || isCreatorOfProject) {
+                        // no permitimos cambiar a ADMIN; mantenemos roles actuales
+                        roleChangeFailed = true;
+                    } else {
+                        // permitir cambio a ADMIN: eliminar roles actuales y asignar nuevo
+                        List<com.doublevistudio.api.model.UsuarioRol> currentRoles = usuarioRolRepository.findByIdUsuarioId(user.getId());
+                        if (currentRoles != null && !currentRoles.isEmpty()) {
+                            usuarioRolRepository.deleteAll(currentRoles);
+                        }
+
+                        com.doublevistudio.api.model.UsuarioRol newUr = com.doublevistudio.api.model.UsuarioRol.builder()
+                                .id(new UsuarioRolId(user.getId(), role.getId()))
+                                .usuario(user)
+                                .rol(role)
+                                .build();
+                        usuarioRolRepository.save(newUr);
+                    }
+                } else {
+                    // rol distinto de ADMIN: proceder como antes
+                    List<com.doublevistudio.api.model.UsuarioRol> currentRoles = usuarioRolRepository.findByIdUsuarioId(user.getId());
+                    if (currentRoles != null && !currentRoles.isEmpty()) {
+                        usuarioRolRepository.deleteAll(currentRoles);
+                    }
+
+                    com.doublevistudio.api.model.UsuarioRol newUr = com.doublevistudio.api.model.UsuarioRol.builder()
+                            .id(new UsuarioRolId(user.getId(), role.getId()))
+                            .usuario(user)
+                            .rol(role)
+                            .build();
+                    usuarioRolRepository.save(newUr);
+                }
             }
         }
 
@@ -568,7 +603,11 @@ public class UsuarioController {
 
         ResponseWrapper<Map<String, Object>> wrap = new ResponseWrapper<>();
         wrap.setStatus("success");
-        wrap.setMessage("Usuario actualizado por ADMIN");
+        if (roleChangeFailed) {
+            wrap.setMessage("Usuario actualizado por ADMIN, pero no se pudo cambiar el rol a ADMIN porque el usuario tiene tareas no completadas o es creador de proyectos");
+        } else {
+            wrap.setMessage("Usuario actualizado por ADMIN");
+        }
         wrap.setTimestamp(Instant.now());
         wrap.setData(data);
         return ResponseEntity.ok(wrap);

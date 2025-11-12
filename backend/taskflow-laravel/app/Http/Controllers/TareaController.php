@@ -7,6 +7,7 @@ use App\Http\Requests\StoreTareaRequest;
 use App\Http\Requests\UpdateTareaRequest;
 use App\Http\Resources\TareaResource;
 use App\Models\Tarea;
+use App\Models\Usuario;
 use App\Services\TareaService;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateTareaEstadoRequest;
@@ -52,6 +53,20 @@ class TareaController extends Controller
             $data['creado_por'] = $user->id;
         }
 
+        // Validar que el usuario asignado (si se proporciona) esté ACTIVO y no sea ADMIN
+        if (array_key_exists('asignado_a', $data) && $data['asignado_a']) {
+            $asignado = Usuario::with('roles')->find($data['asignado_a']);
+            if (! $asignado) {
+                return $this->errorResponse('Usuario asignado no existe', 422);
+            }
+            if ($asignado->activo == 0) {
+                return $this->errorResponse('No se puede asignar una tarea a un usuario inactivo', 422);
+            }
+            if ($asignado->hasRole('ADMIN')) {
+                return $this->errorResponse('No se puede asignar una tarea a un usuario con rol ADMIN', 422);
+            }
+        }
+
         $tarea = $this->service->create($data);
         return $this->successResponse('Tarea creada', new TareaResource($tarea), 201);
     }
@@ -80,6 +95,19 @@ class TareaController extends Controller
     public function update(Request $request, Tarea $tarea)
     {
         $data = ($request instanceof UpdateTareaRequest) ? $request->validated() : $request->all();
+        // Si se intenta reasignar la tarea, validar que el nuevo usuario esté activo y no sea ADMIN
+        if (array_key_exists('asignado_a', $data) && $data['asignado_a']) {
+            $asignado = Usuario::with('roles')->find($data['asignado_a']);
+            if (! $asignado) {
+                return $this->errorResponse('Usuario asignado no existe', 422);
+            }
+            if ($asignado->activo == 0) {
+                return $this->errorResponse('No se puede asignar una tarea a un usuario inactivo', 422);
+            }
+            if ($asignado->hasRole('ADMIN')) {
+                return $this->errorResponse('No se puede asignar una tarea a un usuario con rol ADMIN', 422);
+            }
+        }
         $tarea = $this->service->update($tarea, $data);
         return $this->successResponse('Tarea actualizada', new TareaResource($tarea));
     }

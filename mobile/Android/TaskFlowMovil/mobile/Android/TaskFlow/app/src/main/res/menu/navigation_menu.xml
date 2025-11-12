@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_todas_tareas"
+            android:icon="@drawable/ic_task"
+            android:title="Todas las Tareas" />
+
+        <item
+            android:id="@+id/nav_mis_tareas"
+            android:icon="@drawable/ic_my_tasks"
+            android:title="Mis Tareas" />
+        <item
+            android:id="@+id/nav_crear_proyecto"
+            android:icon="@drawable/ic_project_folder"
+            android:title="Crear Nuevo Proyecto"
+            android:visible="false" />
+
+
+        <item
+            android:id="@+id/nav_stats"
+            android:title="Estadísticas"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:visible="false" />
+    </group>
+
+    <item android:title="Cuenta">
+        <menu>
+            <item
+                android:id="@+id/nav_profile"
+                android:title="Perfil"
+                android:icon="@android:drawable/ic_menu_myplaces" />
+
+            <item
+                android:id="@+id/nav_logout"
+                android:title="Cerrar Sesión"
+                android:icon="@android:drawable/ic_menu_close_clear_cancel" />
+        </menu>
+    </item>
+
+</menu>
+

@@ -269,6 +269,15 @@ public class TareaController {
             } else {
                 try {
                     LocalDate fecha = LocalDate.parse(String.valueOf(v));
+                    // nueva validación: no permitir fechas anteriores a hoy
+                    if (fecha.isBefore(LocalDate.now())) {
+                        ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+                        w.setStatus("error");
+                        w.setMessage("fecha_vencimiento no puede ser anterior a hoy");
+                        w.setTimestamp(Instant.now());
+                        w.setData(null);
+                        return ResponseEntity.badRequest().body(w);
+                    }
                     t.setFechaVencimiento(fecha);
                 } catch (Exception ex) {
                     ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
@@ -451,7 +460,17 @@ public class TareaController {
         t.setDescripcion(req.getDescripcion());
         if (req.getFecha_vencimiento() != null) {
             try {
-                t.setFechaVencimiento(LocalDate.parse(req.getFecha_vencimiento()));
+                LocalDate fecha = LocalDate.parse(req.getFecha_vencimiento());
+                // nueva validación: no permitir fechas anteriores a hoy
+                if (fecha.isBefore(LocalDate.now())) {
+                    ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
+                    w.setStatus("error");
+                    w.setMessage("fecha_vencimiento no puede ser anterior a hoy");
+                    w.setTimestamp(Instant.now());
+                    w.setData(null);
+                    return ResponseEntity.badRequest().body(w);
+                }
+                t.setFechaVencimiento(fecha);
             } catch (Exception ex) {
                 ResponseWrapper<Map<String, Object>> w = new ResponseWrapper<>();
                 w.setStatus("error");

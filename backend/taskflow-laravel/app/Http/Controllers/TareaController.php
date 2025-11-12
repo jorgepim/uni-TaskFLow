@@ -43,9 +43,10 @@ class TareaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTareaRequest $request)
     {
-        $data = ($request instanceof StoreTareaRequest) ? $request->validated() : $request->all();
+        // Usar datos validados por el FormRequest
+        $data = $request->validated();
 
         // Asignar creado_por desde el usuario autenticado (token)
         $user = $request->user();
@@ -92,9 +93,10 @@ class TareaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Tarea $tarea)
+    public function update(UpdateTareaRequest $request, Tarea $tarea)
     {
-        $data = ($request instanceof UpdateTareaRequest) ? $request->validated() : $request->all();
+        // Usar datos validados por el FormRequest
+        $data = $request->validated();
         // Si se intenta reasignar la tarea, validar que el nuevo usuario esté activo y no sea ADMIN
         if (array_key_exists('asignado_a', $data) && $data['asignado_a']) {
             $asignado = Usuario::with('roles')->find($data['asignado_a']);

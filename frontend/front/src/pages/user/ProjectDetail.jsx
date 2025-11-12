@@ -68,6 +68,7 @@ export default function ProjectDetail() {
   const [editDescripcion, setEditDescripcion] = useState("");
   const [editFechaVenc, setEditFechaVenc] = useState("");
   const [editAsignadoId, setEditAsignadoId] = useState(null);
+  const [editOriginalTask, setEditOriginalTask] = useState(null);
   const [editingTask, setEditingTask] = useState(false);
   const [editError, setEditError] = useState(null);
   // assigned users modal state
@@ -86,6 +87,9 @@ export default function ProjectDetail() {
   })();
 
   const currentUserId = currentUser?.id;
+
+  // Fecha mínima para selects de tipo date: hoy (YYYY-MM-DD)
+  const today = new Date().toISOString().slice(0, 10);
 
   // fetch available (no-asignados) users
   const fetchAvailableUsers = async (filters = {}) => {
@@ -340,6 +344,8 @@ export default function ProjectDetail() {
       );
       setEditFechaVenc(tarea.fecha_vencimiento || tarea.fechaVencimiento || "");
       setEditAsignadoId(tarea.asignado?.id || null);
+      // guardar una copia original para comparar cambios al guardar
+      setEditOriginalTask(tarea);
     } catch (err) {
       void err;
       // fallback to the provided object if the fetch fails
@@ -349,6 +355,7 @@ export default function ProjectDetail() {
       );
       setEditFechaVenc(t.fecha_vencimiento || t.fechaVencimiento || "");
       setEditAsignadoId(t.asignado?.id || null);
+      setEditOriginalTask(t);
     }
     // preload assigned users for select options
     await fetchAssignedUsers({ nombre: "" });
@@ -360,15 +367,38 @@ export default function ProjectDetail() {
       setEditError("El título es requerido");
       return;
     }
+    // construir payload con solo campos modificados respecto a la tarea original
+    const orig = editOriginalTask || {};
+    const payload = {};
+
+    if ((editTitulo || "") !== (orig.titulo || orig.title || "")) {
+      payload.titulo = editTitulo;
+    }
+
+    const origDesc =
+      orig.descripcion || orig.description || orig.texto || orig.text || "";
+    if ((editDescripcion || "") !== origDesc) {
+      payload.descripcion = editDescripcion;
+    }
+
+    const origFecha = (orig.fecha_vencimiento || orig.fechaVencimiento || "") + "";
+    if ((editFechaVenc || "") !== origFecha) {
+      payload.fechaVencimiento = editFechaVenc || null;
+    }
+
+    const origAsignadoId = orig.asignado?.id || null;
+    if ((editAsignadoId || null) !== (origAsignadoId || null)) {
+      payload.asignadoA = editAsignadoId || null;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      setEditError("No hay cambios para guardar");
+      return;
+    }
+
     setEditingTask(true);
     setEditError(null);
     try {
-      const payload = {
-        titulo: editTitulo,
-        descripcion: editDescripcion,
-        fechaVencimiento: editFechaVenc || null,
-        asignadoA: editAsignadoId || null,
-      };
       await patchTarea(editTaskId, payload);
       setIsEditOpen(false);
       setEditTaskId(null);
@@ -376,6 +406,7 @@ export default function ProjectDetail() {
       setEditDescripcion("");
       setEditFechaVenc("");
       setEditAsignadoId(null);
+      setEditOriginalTask(null);
       // reload project and task detail if open
       await load();
       if (taskDetail?.id === editTaskId) {
@@ -1016,6 +1047,7 @@ export default function ProjectDetail() {
                       type="date"
                       value={editFechaVenc}
                       onChange={(e) => setEditFechaVenc(e.target.value)}
+                      min={today}
                       className="mt-1 w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     />
                   </div>
@@ -1231,6 +1263,7 @@ export default function ProjectDetail() {
                       type="date"
                       value={taskFechaVenc}
                       onChange={(e) => setTaskFechaVenc(e.target.value)}
+                      min={today}
                       className="mt-1 w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     />
                   </div>

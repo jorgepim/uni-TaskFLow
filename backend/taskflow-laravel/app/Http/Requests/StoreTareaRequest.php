@@ -16,11 +16,19 @@ class StoreTareaRequest extends FormRequest
     return [
       'titulo' => 'required|string|max:150',
       'descripcion' => 'nullable|string',
-      'fecha_vencimiento' => 'nullable|date',
+      // fecha_vencimiento debe ser hoy o en el futuro (no se permiten fechas pasadas)
+      'fecha_vencimiento' => 'nullable|date|after_or_equal:today',
       'estado' => 'nullable|in:PENDIENTE,PROGRESO,COMPLETADA',
       'proyecto_id' => 'required|integer|exists:proyectos,id',
       'asignado_a' => 'nullable|integer|exists:usuarios,id',
-      'creado_por' => 'required|integer|exists:usuarios,id',
+    ];
+  }
+
+  public function messages(): array
+  {
+    return [
+      'fecha_vencimiento.date' => 'fecha_vencimiento inválida, usar YYYY-MM-DD',
+      'fecha_vencimiento.after_or_equal' => 'fecha_vencimiento no puede ser anterior a hoy',
     ];
   }
 }

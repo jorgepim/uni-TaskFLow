@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import sv.edu.catolica.taskflow.api.ApiClient;
 import sv.edu.catolica.taskflow.models.LoginResponse;
+import sv.edu.catolica.taskflow.models.User;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -79,19 +80,43 @@ public class LoginActivity extends AppCompatActivity {
         setLoading(true);
 
         apiClient.login(email, password, new ApiClient.ApiCallback<LoginResponse>() {
+
+            // En LoginActivity.java, dentro de tu llamada a apiClient.login(...)
+
             @Override
             public void onSuccess(LoginResponse result) {
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    setLoading(false);
-                    saveUserData(result);
-                    startMainActivity();
-                });
+                // 1. Obtenemos el usuario y su rol
+                User user = result.getUser();
+                boolean isAdmin = user.isAdmin();
+
+                // 2. Guardamos los datos
+                SharedPreferences prefs = getSharedPreferences("TaskFlowPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("auth_token", result.getToken());
+                editor.putInt("user_id", user.getId());
+                editor.putBoolean("is_admin", isAdmin);
+                editor.apply();
+
+                // 3. --- ¡LA LÓGICA DE REDIRECCIÓN! ---
+                Intent intent;
+                if (isAdmin) {
+                    // Si es Admin, la pantalla principal es Estadísticas
+                    intent = new Intent(LoginActivity.this, StatsActivity.class);
+                } else {
+                    // Si es User, la pantalla principal es la lista de tareas
+                    intent = new Intent(LoginActivity.this, MainActivity.class);
+                }
+
+                // 4. Lanzamos la actividad y limpiamos el historial
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish(); // Cierra LoginActivity
             }
 
             @Override
             public void onError(String error) {
+                // Tu código de error existente
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    setLoading(false);
                     Toast.makeText(LoginActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
                 });
             }

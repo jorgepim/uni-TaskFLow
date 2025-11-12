@@ -1,6 +1,7 @@
 package sv.edu.catolica.taskflow;
 
 import android.app.DatePickerDialog;
+import android.content.SharedPreferences; // <-- Importado
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,9 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout; // <-- Importado
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList; // <-- Importado
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +40,7 @@ public class EditarTareaActivity extends AppCompatActivity {
     // Vistas del formulario
     private TextInputEditText etTitulo, etDescripcion, etFecha;
     private AutoCompleteTextView acProyecto, acAsignado;
+    private TextInputLayout layoutAsignado; // <-- Vista del layout "Asignar A"
     private Button btnGuardar;
 
     // Datos
@@ -44,6 +48,7 @@ public class EditarTareaActivity extends AppCompatActivity {
     private List<User> listaUsuarios;
     private Tarea tareaActual;
     private int tareaId;
+    private int userId; // ID del usuario logueado
 
     // Selección
     private ProyectoSimple proyectoSeleccionado;
@@ -53,7 +58,6 @@ public class EditarTareaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Usa el NUEVO layout que acabamos de crear
         setContentView(R.layout.activity_editar_tarea);
 
         // Obtener el ID de la tarea a editar
@@ -64,15 +68,19 @@ public class EditarTareaActivity extends AppCompatActivity {
             return;
         }
 
+        // Obtener el ID del usuario actual
+        SharedPreferences prefs = getSharedPreferences("TaskFlowPrefs", MODE_PRIVATE);
+        userId = prefs.getInt("user_id", 0);
+
         setupToolbar();
         apiClient = new ApiClient(this);
         bindViews();
 
-        btnGuardar.setText("Actualizar Tarea"); // Cambiar texto del botón
+        btnGuardar.setText("Actualizar Tarea");
 
-        // Iniciar la carga de datos
+        // ¡Orden de carga modificado!
+        loadProyectos();
         loadTaskDetails();
-        loadSpinnersData();
     }
 
     private void setupToolbar() {
@@ -91,11 +99,22 @@ public class EditarTareaActivity extends AppCompatActivity {
         etFecha = findViewById(R.id.etFecha);
         acProyecto = findViewById(R.id.acProyecto);
         acAsignado = findViewById(R.id.acAsignado);
+        layoutAsignado = findViewById(R.id.layoutAsignado); // <-- Vinculado
         btnGuardar = findViewById(R.id.btnGuardar);
 
         // Listeners
         btnGuardar.setOnClickListener(v -> actualizarTarea());
-        setupDatePicker();
+        etFecha.setOnClickListener(v -> setupDatePicker());
+
+        // Listener para cargar usuarios cuando se selecciona un proyecto
+        acProyecto.setOnItemClickListener((parent, view, position, id) -> {
+            proyectoSeleccionado = (ProyectoSimple) parent.getItemAtPosition(position);
+            // Limpiar selección de usuario si cambia el proyecto
+            usuarioSeleccionado = null;
+            acAsignado.setText("", false);
+            // Cargar usuarios para el nuevo proyecto seleccionado
+            cargarUsuariosDelProyecto(proyectoSeleccionado.getId(), null);
+        });
     }
 
     private void setupDatePicker() {
@@ -117,18 +136,37 @@ public class EditarTareaActivity extends AppCompatActivity {
         apiClient.getTaskDetails(tareaId, new ApiClient.ApiCallback<Tarea>() {
             @Override
             public void onSuccess(Tarea result) {
+
+                // --- LÓGICA DE VALIDACIÓN (REGLA 1) ---
+                boolean isAsignadoAMi = (result.getAsignado() != null && result.getAsignado().getId() == userId);
+                boolean isCreadoPorMi = (result.getCreado_por() != null && result.getCreado_por().getId() == userId);
+
+                if (isAsignadoAMi && !isCreadoPorMi) {
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        Toast.makeText(EditarTareaActivity.this, "No puedes editar una tarea que te fue asignada por otra persona.", Toast.LENGTH_LONG).show();
+                        finish();
+                    });
+                    return;
+                }
+                // --- FIN DE VALIDACIÓN ---
+
                 tareaActual = result;
-                new Handler(Looper.getMainLooper()).post(EditarTareaActivity.this::tryPopulateForm);
+                tryPopulateForm(); // Intentar rellenar
             }
             @Override
             public void onError(String error) {
-                // ... manejar error ...
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    Toast.makeText(EditarTareaActivity.this, "Error al cargar la tarea: " + error, Toast.LENGTH_SHORT).show();
+                    finish();
+                });
             }
         });
     }
 
-    private void loadSpinnersData() {
-        // Cargar Proyectos
+    /**
+     * Carga solo la lista de Proyectos
+     */
+    private void loadProyectos() {
         apiClient.getProyectos(new ApiClient.ApiCallback<List<ProyectoSimple>>() {
             @Override
             public void onSuccess(List<ProyectoSimple> result) {
@@ -137,63 +175,104 @@ public class EditarTareaActivity extends AppCompatActivity {
                     ArrayAdapter<ProyectoSimple> adapter = new ArrayAdapter<>(EditarTareaActivity.this,
                             android.R.layout.simple_spinner_dropdown_item, listaProyectos);
                     acProyecto.setAdapter(adapter);
-                    acProyecto.setOnItemClickListener((p, v, pos, id) -> proyectoSeleccionado = (ProyectoSimple) p.getItemAtPosition(pos));
                     tryPopulateForm(); // Intentar rellenar
                 });
             }
-            @Override public void onError(String error) { /* ... */ }
+            @Override
+            public void onError(String error) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    Toast.makeText(EditarTareaActivity.this, "Error al cargar proyectos: " + error, Toast.LENGTH_SHORT).show();
+                });
+            }
         });
+    }
 
-        // Cargar Usuarios
-        apiClient.getUsuarios(new ApiClient.ApiCallback<List<User>>() {
+    /**
+     * Carga los usuarios (miembros) de un proyecto específico (REGLA 2 y 3)
+     */
+    private void cargarUsuariosDelProyecto(int proyectoId, @Nullable Integer usuarioAsignadoId) {
+        layoutAsignado.setEnabled(false);
+        layoutAsignado.setHint("Cargando usuarios...");
+
+        apiClient.getUsuariosDelProyecto(proyectoId, new ApiClient.ApiCallback<List<User>>() {
             @Override
             public void onSuccess(List<User> result) {
-                listaUsuarios = result;
+                // --- FILTRAR ADMINS (REGLA 3) ---
+                List<User> usuariosFiltrados = new ArrayList<>();
+                if (result != null) {
+                    for (User usuario : result) {
+                        if (!usuario.isAdmin()) {
+                            usuariosFiltrados.add(usuario);
+                        }
+                    }
+                }
+                listaUsuarios = usuariosFiltrados; // Guardar la lista filtrada
+
                 new Handler(Looper.getMainLooper()).post(() -> {
                     ArrayAdapter<User> adapter = new ArrayAdapter<>(EditarTareaActivity.this,
                             android.R.layout.simple_spinner_dropdown_item, listaUsuarios);
                     acAsignado.setAdapter(adapter);
-                    acAsignado.setOnItemClickListener((p, v, pos, id) -> usuarioSeleccionado = (User) p.getItemAtPosition(pos));
-                    tryPopulateForm(); // Intentar rellenar
+                    layoutAsignado.setHint("Asignar A (Opcional)");
+                    layoutAsignado.setEnabled(true);
+
+                    // Pre-seleccionar al usuario si se pasó el ID
+                    if (usuarioAsignadoId != null) {
+                        for (User u : listaUsuarios) {
+                            if (u.getId() == usuarioAsignadoId) {
+                                usuarioSeleccionado = u;
+                                acAsignado.setText(u.toString(), false);
+                                break;
+                            }
+                        }
+                    }
+
+                    acAsignado.setOnItemClickListener((parent, view, position, id) -> {
+                        usuarioSeleccionado = (User) parent.getItemAtPosition(position);
+                    });
                 });
             }
-            @Override public void onError(String error) { /* ... */ }
+            @Override
+            public void onError(String error) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    Toast.makeText(EditarTareaActivity.this, "Error al cargar usuarios: " + error, Toast.LENGTH_SHORT).show();
+                });
+            }
         });
     }
 
+
+    /**
+     * Rellena el formulario una vez que la Tarea y los Proyectos han cargado.
+     * Luego, dispara la carga de Usuarios.
+     */
     private synchronized void tryPopulateForm() {
-        if (tareaActual == null || listaProyectos == null || listaUsuarios == null) {
-            return; // Esperar a que carguen todos los datos
+        // Espera a que la TAREA y los PROYECTOS carguen
+        if (tareaActual == null || listaProyectos == null) {
+            return;
         }
 
         // Rellenar campos simples
         etTitulo.setText(tareaActual.getTitulo());
         etDescripcion.setText(tareaActual.getDescripcion());
-
-        // Rellenar fecha
         if (tareaActual.getFecha_vencimiento() != null) {
             fechaSeleccionada = tareaActual.getFecha_vencimiento();
             etFecha.setText(formatDateForUser(fechaSeleccionada));
         }
 
-        // Rellenar Proyecto
+        // Pre-seleccionar Proyecto
         for (ProyectoSimple p : listaProyectos) {
             if (p.getId() == tareaActual.getProyecto_id()) {
                 proyectoSeleccionado = p;
-                acProyecto.setText(p.toString(), false); // false para no filtrar
+                acProyecto.setText(p.toString(), false);
                 break;
             }
         }
 
-        // Rellenar Asignado
-        if (tareaActual.getAsignado() != null) {
-            for (User u : listaUsuarios) {
-                if (u.getId() == tareaActual.getAsignado().getId()) {
-                    usuarioSeleccionado = u;
-                    acAsignado.setText(u.toString(), false);
-                    break;
-                }
-            }
+        // DISPARAR LA CARGA DE USUARIOS
+        Integer idUsuarioAsignado = (tareaActual.getAsignado() != null) ? tareaActual.getAsignado().getId() : null;
+
+        if (proyectoSeleccionado != null) {
+            cargarUsuariosDelProyecto(proyectoSeleccionado.getId(), idUsuarioAsignado);
         }
     }
 
@@ -206,6 +285,7 @@ public class EditarTareaActivity extends AppCompatActivity {
             return;
         }
         if (proyectoSeleccionado == null) {
+            // Esto es por si el usuario borra la selección
             acProyecto.setError("Debes seleccionar un proyecto");
             return;
         }
@@ -228,7 +308,7 @@ public class EditarTareaActivity extends AppCompatActivity {
                     public void onSuccess(Tarea result) {
                         new Handler(Looper.getMainLooper()).post(() -> {
                             Toast.makeText(EditarTareaActivity.this, "Tarea actualizada", Toast.LENGTH_LONG).show();
-                            finish(); // Cerrar y volver a la lista
+                            finish();
                         });
                     }
                     @Override
@@ -248,7 +328,7 @@ public class EditarTareaActivity extends AppCompatActivity {
     private String formatDateForUser(String yyyyMMdd) {
         if(yyyyMMdd == null || yyyyMMdd.isEmpty()) return "";
         try {
-            SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+            SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             SimpleDateFormat outFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
             Date date = inFormat.parse(yyyyMMdd);
             return outFormat.format(date);

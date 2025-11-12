@@ -16,6 +16,10 @@
             android:icon="@drawable/ic_project_folder"
             android:title="Crear Nuevo Proyecto"
             android:visible="false" />
+        <item
+            android:id="@+id/nav_asignar_usuarios"
+            android:icon="@drawable/ic_add" android:title="Asignar Usuarios"
+            android:visible="false" />
 
 
         <item

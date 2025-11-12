@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,6 +14,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Header con título y estado -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,40 +27,60 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Título de la tarea"
-                android:textSize="16sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                android:textColor="#333" />
+                android:textColor="#196163"
+                android:maxLines="2"
+                android:ellipsize="end" />
 
             <TextView
                 android:id="@+id/tvEstado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PENDIENTE"
-                android:textSize="12sp"
-                android:textColor="#fff"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
                 android:background="@drawable/status_background"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp" />
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:layout_marginStart="8dp" />
 
         </LinearLayout>
 
+        <!-- Descripción -->
         <TextView
             android:id="@+id/tvDescripcion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Descripción de la tarea"
             android:textSize="14sp"
-            android:textColor="#666"
+            android:textColor="#6FA8BF"
             android:layout_marginTop="8dp"
             android:maxLines="2"
             android:ellipsize="end" />
 
+        <!-- Separador -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="#DCE5EB" />
+
+        <!-- Información de asignado y fecha -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="12dp"
             android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@android:drawable/ic_menu_myplaces"
+                app:tint="#6FA8BF"
+                android:layout_marginEnd="6dp" />
 
             <TextView
                 android:id="@+id/tvAsignado"
@@ -66,25 +88,37 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Asignado a: Usuario"
-                android:textSize="12sp"
-                android:textColor="#888" />
+                android:textSize="13sp"
+                android:textColor="#6FA8BF"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@android:drawable/ic_menu_recent_history"
+                app:tint="#f44336"
+                android:layout_marginEnd="6dp"
+                android:layout_marginStart="8dp" />
 
             <TextView
                 android:id="@+id/tvFechaVencimiento"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="2025-12-01"
-                android:textSize="12sp"
+                android:textSize="13sp"
+                android:textStyle="bold"
                 android:textColor="#f44336" />
 
         </LinearLayout>
 
+        <!-- Botones de acción -->
         <LinearLayout
             android:id="@+id/layoutButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:visibility="gone">
 
             <Button
@@ -92,9 +126,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="6dp"
                 android:text="En Progreso"
-                android:textSize="12sp"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:strokeColor="#6FA8BF"
+                app:strokeWidth="2dp"
+                app:cornerRadius="8dp"
+                android:textColor="#6FA8BF"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
             <Button
@@ -102,13 +141,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="6dp"
                 android:text="Completar"
-                android:textSize="12sp"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:backgroundTint="#196163"
+                app:cornerRadius="8dp"
                 style="@style/Widget.MaterialComponents.Button" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

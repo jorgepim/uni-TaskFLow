@@ -1,68 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#DCE5EB">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="#196163"
+        android:elevation="4dp"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center">
+        android:fillViewport="true">
 
-        <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@mipmap/ic_launcher"
-            android:layout_marginBottom="24dp" />
-
-        <TextView
-            android:id="@+id/tvNombre"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nombre del Usuario"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#333"
-            android:layout_marginBottom="8dp" />
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:gravity="center_horizontal">
 
-        <TextView
-            android:id="@+id/tvEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="usuario@email.com"
-            android:textSize="16sp"
-            android:textColor="#666"
-            android:layout_marginBottom="16dp" />
+            <!-- Card contenedor del perfil -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@android:color/white">
 
-        <TextView
-            android:id="@+id/tvRol"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="USER"
-            android:textSize="14sp"
-            android:textColor="#fff"
-            android:background="@drawable/status_background"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"
-            android:layout_marginBottom="32dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="32dp"
+                    android:gravity="center_horizontal">
 
-        <TextView
-            android:id="@+id/tvFechaCreacion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Miembro desde: 2025-11-10"
-            android:textSize="14sp"
-            android:textColor="#888" />
+                    <!-- Avatar -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        app:cardCornerRadius="60dp"
+                        app:cardElevation="4dp"
+                        android:layout_marginBottom="24dp">
 
-    </LinearLayout>
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@mipmap/ic_launcher"
+                            android:scaleType="centerCrop" />
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Nombre -->
+                    <TextView
+                        android:id="@+id/tvNombre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre del Usuario"
+                        android:textSize="26sp"
+                        android:textStyle="bold"
+                        android:textColor="#196163"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- Email -->
+                    <TextView
+                        android:id="@+id/tvEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="usuario@email.com"
+                        android:textSize="16sp"
+                        android:textColor="#6FA8BF"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Badge de Rol -->
+                    <TextView
+                        android:id="@+id/tvRol"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="USER"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/status_background"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="8dp"
+                        android:layout_marginBottom="32dp" />
+
+                    <!-- Separador -->
+                    <View
+                        android:layout_width="80dp"
+                        android:layout_height="3dp"
+                        android:background="#9AC7D9"
+                        android:layout_marginBottom="24dp" />
+
+                    <!-- Fecha de Creación con ícono -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_recent_history"
+                            android:tint="#6FA8BF"
+                            android:layout_marginEnd="8dp" />
+
+                        <TextView
+                            android:id="@+id/tvFechaCreacion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Miembro desde: 2025-11-10"
+                            android:textSize="14sp"
+                            android:textColor="#6FA8BF" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

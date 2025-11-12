@@ -6,24 +6,26 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StatsActivity"> <!-- Contexto es .StatsActivity -->
+    tools:context=".StatsActivity">
 
     <!-- Contenido Principal -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="#DCE5EB">
 
-        <!-- Tu Toolbar (necesaria para el menú) -->
+        <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="#196163"
+            android:elevation="4dp"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
-        <!-- Tu ScrollView con el contenido de estadísticas -->
+        <!-- ScrollView con el contenido de estadísticas -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -39,127 +41,149 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Estadísticas de Proyectos"
-                    android:textSize="24sp"
+                    android:textSize="28sp"
                     android:textStyle="bold"
-                    android:textColor="#333"
+                    android:textColor="#196163"
                     android:layout_marginBottom="24dp"
                     android:gravity="center" />
 
                 <!-- Resumen General (CardView) -->
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="@android:color/white">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="20dp">
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Resumen General"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold"
-                            android:textColor="#2196F3"
-                            android:layout_marginBottom="12dp" />
+                            android:textColor="#196163"
+                            android:layout_marginBottom="16dp" />
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
+
                             <!-- Proyectos -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
-                                android:gravity="center">
+                                android:gravity="center"
+                                android:padding="12dp">
+
                                 <TextView
                                     android:id="@+id/tvTotalProyectos"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="0"
-                                    android:textSize="32sp"
+                                    android:textSize="30sp"
                                     android:textStyle="bold"
-                                    android:textColor="#2196F3" />
+                                    android:textColor="#196163" />
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Proyectos"
                                     android:textSize="14sp"
-                                    android:textColor="#666" />
+                                    android:textColor="#6FA8BF"
+                                    android:layout_marginTop="4dp" />
                             </LinearLayout>
+
                             <!-- Tareas -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
-                                android:gravity="center">
+                                android:gravity="center"
+                                android:padding="12dp">
+
                                 <TextView
                                     android:id="@+id/tvTotalTareas"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="0"
-                                    android:textSize="32sp"
+                                    android:textSize="30sp"
                                     android:textStyle="bold"
-                                    android:textColor="#4CAF50" />
+                                    android:textColor="#6FA8BF" />
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Tareas"
                                     android:textSize="14sp"
-                                    android:textColor="#666" />
+                                    android:textColor="#6FA8BF"
+                                    android:layout_marginTop="4dp" />
                             </LinearLayout>
+
                             <!-- Completado -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical"
-                                android:gravity="center">
+                                android:gravity="center"
+                                android:padding="12dp">
+
                                 <TextView
                                     android:id="@+id/tvPorcentajeCompletado"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="0%"
-                                    android:textSize="32sp"
+                                    android:textSize="30sp"
                                     android:textStyle="bold"
-                                    android:textColor="#FF9800" />
+                                    android:textColor="#9AC7D9" />
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Completado"
                                     android:textSize="14sp"
-                                    android:textColor="#666" />
+                                    android:textColor="#6FA8BF"
+                                    android:layout_marginTop="4dp" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Estados de Tareas (CardView) -->
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="@android:color/white">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="20dp">
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Distribución de Tareas"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold"
-                            android:textColor="#2196F3"
-                            android:layout_marginBottom="12dp" />
+                            android:textColor="#196163"
+                            android:layout_marginBottom="16dp" />
+
                         <LinearLayout
                             android:id="@+id/layoutEstados"
                             android:layout_width="match_parent"
@@ -167,34 +191,38 @@
                             android:orientation="vertical">
                         </LinearLayout>
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Lista de Proyectos (CardView) -->
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="@android:color/white">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="20dp">
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Proyectos por Desempeño"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold"
-                            android:textColor="#2196F3"
-                            android:layout_marginBottom="12dp" />
+                            android:textColor="#196163"
+                            android:layout_marginBottom="16dp" />
+
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recyclerViewProyectos"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:nestedScrollingEnabled="false" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- ProgressBar -->
                 <ProgressBar
@@ -202,7 +230,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="24dp"
+                    android:indeterminateTint="#196163"
                     android:visibility="gone" />
 
             </LinearLayout>
@@ -216,6 +245,14 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/navigation_menu" />
+        android:background="@android:color/white"
+        app:menu="@menu/navigation_menu"
+        app:itemIconTint="#196163"
+        app:itemTextColor="#196163"
+        app:itemShapeFillColor="#9AC7D9"
+        app:itemShapeInsetStart="8dp"
+        app:itemShapeInsetEnd="8dp"
+        app:itemShapeInsetTop="4dp"
+        app:itemShapeInsetBottom="4dp" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

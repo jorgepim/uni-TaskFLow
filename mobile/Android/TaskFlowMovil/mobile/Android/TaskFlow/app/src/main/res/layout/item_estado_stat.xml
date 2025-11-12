@@ -1,34 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:padding="8dp">
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@android:color/white">
 
-    <View
-        android:id="@+id/indicatorEstado"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="12dp"
-        android:background="#2196F3" />
-
-    <TextView
-        android:id="@+id/tvEstado"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="PENDIENTE"
-        android:textSize="14sp"
-        android:textColor="#333" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvCantidad"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="5"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:textColor="#333" />
+        <View
+            android:id="@+id/indicatorEstado"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="16dp"
+            android:background="#196163" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/tvEstado"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="PENDIENTE"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#196163" />
+
+        <TextView
+            android:id="@+id/tvCantidad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#6FA8BF"
+            android:layout_marginStart="12dp" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

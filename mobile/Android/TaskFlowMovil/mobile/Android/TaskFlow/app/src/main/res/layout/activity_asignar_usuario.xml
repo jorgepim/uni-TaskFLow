@@ -5,63 +5,142 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#DCE5EB"
     tools:context=".AsignarUsuarioActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="#196163"
+        android:elevation="4dp"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layoutProyecto"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:hint="1. Selecciona tu Proyecto"
-            app:startIconDrawable="@drawable/ic_project_folder"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <AutoCompleteTextView
-                android:id="@+id/acProyecto"
+            <!-- Card contenedor principal -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@android:color/white">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layoutUsuario"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:hint="2. Selecciona un Usuario"
-            app:startIconDrawable="@drawable/ic_add"
-            android:enabled="false"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
-            <AutoCompleteTextView
-                android:id="@+id/acUsuario"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
+                    <!-- Título de la sección -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Asignar Usuario"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="#196163"
+                        android:layout_marginBottom="8dp" />
 
-        <Button
-            android:id="@+id/btnAsignar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Asignar Usuario al Proyecto"
-            android:padding="12dp"
-            android:enabled="false"
-            style="@style/Widget.MaterialComponents.Button" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Completa los siguientes pasos para asignar un usuario a tu proyecto"
+                        android:textSize="14sp"
+                        android:textColor="#6FA8BF"
+                        android:layout_marginBottom="24dp" />
 
-    </LinearLayout>
+                    <!-- Selector de Proyecto -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layoutProyecto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:hint="1. Selecciona tu Proyecto"
+                        app:startIconDrawable="@drawable/ic_project_folder"
+                        app:startIconTint="#196163"
+                        app:boxStrokeColor="#196163"
+                        app:hintTextColor="#196163"
+                        app:boxStrokeWidth="2dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/acProyecto"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="#196163"
+                            android:textSize="16sp"
+                            android:padding="16dp"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Selector de Usuario -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layoutUsuario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="32dp"
+                        android:hint="2. Selecciona un Usuario"
+                        app:startIconDrawable="@drawable/ic_add"
+                        app:startIconTint="#6FA8BF"
+                        app:boxStrokeColor="#6FA8BF"
+                        app:hintTextColor="#6FA8BF"
+                        app:boxStrokeWidth="2dp"
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        android:enabled="false"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/acUsuario"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="#196163"
+                            android:textSize="16sp"
+                            android:padding="16dp"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Botón de Asignar -->
+                    <Button
+                        android:id="@+id/btnAsignar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Asignar Usuario al Proyecto"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:padding="16dp"
+                        android:enabled="false"
+                        android:backgroundTint="#196163"
+                        android:textColor="@android:color/white"
+                        app:cornerRadius="12dp"
+                        app:elevation="4dp"
+                        style="@style/Widget.MaterialComponents.Button" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Información adicional -->
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

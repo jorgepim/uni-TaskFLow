@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#DCE5EB"
     tools:context=".MisTareasActivity">
 
     <LinearLayout
@@ -16,7 +17,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="#196163"
+            android:elevation="4dp"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
@@ -30,7 +32,8 @@
                 android:id="@+id/recyclerViewTareas"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="8dp" />
+                android:padding="12dp"
+                android:clipToPadding="false" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 
@@ -39,9 +42,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_margin="24dp"
         android:contentDescription="Crear nueva tarea"
         app:srcCompat="@drawable/ic_add"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        app:backgroundTint="#196163"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        app:borderWidth="0dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

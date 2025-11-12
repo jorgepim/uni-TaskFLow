@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
 
+    <!-- Grupo principal de Tareas (checkableBehavior="single" para selección) -->
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_todas_tareas"
@@ -11,6 +14,8 @@
             android:id="@+id/nav_mis_tareas"
             android:icon="@drawable/ic_my_tasks"
             android:title="Mis Tareas" />
+
+        <!-- Elementos ocultos por defecto -->
         <item
             android:id="@+id/nav_crear_proyecto"
             android:icon="@drawable/ic_project_folder"
@@ -18,9 +23,9 @@
             android:visible="false" />
         <item
             android:id="@+id/nav_asignar_usuarios"
-            android:icon="@drawable/ic_add" android:title="Asignar Usuarios"
+            android:icon="@drawable/ic_add"
+            android:title="Asignar Usuarios"
             android:visible="false" />
-
 
         <item
             android:id="@+id/nav_stats"
@@ -29,6 +34,7 @@
             android:visible="false" />
     </group>
 
+    <!-- Separador y Grupo de Cuenta -->
     <item android:title="Cuenta">
         <menu>
             <item
@@ -44,4 +50,3 @@
     </item>
 
 </menu>
-
